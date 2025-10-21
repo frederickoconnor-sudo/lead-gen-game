@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 interface Bug {
@@ -10,6 +10,7 @@ interface Bug {
   x: number;
   y: number;
   points: number;
+  speed: number;
 }
 
 export default function Game() {
@@ -19,40 +20,126 @@ export default function Game() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [bearPosition, setBearPosition] = useState(50);
+  const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
 
   const bugTypes = [
-    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'let x = ;' },
-    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'if (true {' },
-    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'const y = [1,2,3' },
-    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'console.log(z)' },
-    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'foo.bar()' },
-    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'myVar = 5' },
-    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'null.toString()' },
-    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'num.toUpperCase()' },
-    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'obj.map()' },
+    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'let x = ;', color: 'from-blue-400 to-blue-600' },
+    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'if (true {', color: 'from-blue-400 to-blue-600' },
+    { type: 'SyntaxError' as const, minPoints: 5, maxPoints: 10, code: 'const y = [1,2,3', color: 'from-blue-400 to-blue-600' },
+    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'console.log(z)', color: 'from-green-400 to-green-600' },
+    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'foo.bar()', color: 'from-green-400 to-green-600' },
+    { type: 'ReferenceError' as const, minPoints: 15, maxPoints: 25, code: 'myVar = 5', color: 'from-green-400 to-green-600' },
+    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'null.toString()', color: 'from-purple-400 to-purple-600' },
+    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'num.toUpperCase()', color: 'from-purple-400 to-purple-600' },
+    { type: 'TypeError' as const, minPoints: 30, maxPoints: 50, code: 'obj.map()', color: 'from-purple-400 to-purple-600' },
   ];
 
-  const spawnBug = () => {
+  const spawnBug = useCallback(() => {
     const bugTemplate = bugTypes[Math.floor(Math.random() * bugTypes.length)];
     const points = Math.floor(Math.random() * (bugTemplate.maxPoints - bugTemplate.minPoints + 1)) + bugTemplate.minPoints;
+    const difficultyMultiplier = 1 + (60 - timeLeft) / 60;
     
     const newBug: Bug = {
       id: Date.now() + Math.random(),
       type: bugTemplate.type,
       code: bugTemplate.code,
-      x: Math.random() * 80 + 10,
-      y: Math.random() * 70 + 10,
+      x: Math.random() * 90 + 5,
+      y: -5,
       points: points,
+      speed: (0.5 + Math.random() * 0.5) * difficultyMultiplier,
     };
 
     setBugs(prev => [...prev, newBug]);
-  };
+  }, [timeLeft]);
 
   const catchBug = (bugId: number, points: number) => {
     setScore(prev => prev + points);
     setBugs(prev => prev.filter(bug => bug.id !== bugId));
+    
+    // Add catch effect sound simulation
+    const audio = new Audio();
+    audio.play().catch(() => {}); // Silent fail for sound
   };
 
+  const checkCollision = (bug: Bug) => {
+    const bearLeft = bearPosition - 8;
+    const bearRight = bearPosition + 8;
+    const bearTop = 85;
+    const bearBottom = 95;
+    
+    return bug.x >= bearLeft && bug.x <= bearRight && bug.y >= bearTop && bug.y <= bearBottom;
+  };
+
+  // Keyboard controls
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      setKeysPressed(prev => new Set(prev).add(e.key));
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      setKeysPressed(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(e.key);
+        return newSet;
+      });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  // Bear movement
+  useEffect(() => {
+    if (!gameStarted || gameOver) return;
+
+    const moveInterval = setInterval(() => {
+      setBearPosition(prev => {
+        let newPos = prev;
+        if (keysPressed.has('ArrowLeft') || keysPressed.has('a') || keysPressed.has('A')) {
+          newPos = Math.max(8, prev - 2);
+        }
+        if (keysPressed.has('ArrowRight') || keysPressed.has('d') || keysPressed.has('D')) {
+          newPos = Math.min(92, prev + 2);
+        }
+        return newPos;
+      });
+    }, 16);
+
+    return () => clearInterval(moveInterval);
+  }, [gameStarted, gameOver, keysPressed]);
+
+  // Bug physics and collision detection
+  useEffect(() => {
+    if (!gameStarted || gameOver) return;
+
+    const physicsInterval = setInterval(() => {
+      setBugs(prevBugs => {
+        const updatedBugs = prevBugs.map(bug => ({
+          ...bug,
+          y: bug.y + bug.speed
+        })).filter(bug => bug.y < 100);
+
+        // Check collisions
+        updatedBugs.forEach(bug => {
+          if (checkCollision(bug)) {
+            catchBug(bug.id, bug.points);
+          }
+        });
+
+        return updatedBugs.filter(bug => !checkCollision(bug));
+      });
+    }, 16);
+
+    return () => clearInterval(physicsInterval);
+  }, [gameStarted, gameOver, bearPosition]);
+
+  // Game timer
   useEffect(() => {
     if (gameStarted && !gameOver) {
       const timer = setInterval(() => {
@@ -70,17 +157,19 @@ export default function Game() {
     }
   }, [gameStarted, gameOver]);
 
+  // Bug spawner
   useEffect(() => {
     if (gameStarted && !gameOver) {
+      const spawnRate = Math.max(800, 2000 - (60 - timeLeft) * 20);
       const spawner = setInterval(() => {
-        if (bugs.length < 8) {
+        if (bugs.length < 12) {
           spawnBug();
         }
-      }, 2000);
+      }, spawnRate);
 
       return () => clearInterval(spawner);
     }
-  }, [gameStarted, gameOver, bugs.length]);
+  }, [gameStarted, gameOver, bugs.length, timeLeft, spawnBug]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -89,162 +178,266 @@ export default function Game() {
     setTimeLeft(60);
     setBugs([]);
     setShowForm(false);
-    spawnBug();
+    setBearPosition(50);
+    setKeysPressed(new Set());
   };
 
   const getBugColor = (type: string) => {
     switch (type) {
-      case 'SyntaxError': return 'bg-blue-500 hover:bg-blue-600';
-      case 'ReferenceError': return 'bg-green-500 hover:bg-green-600';
-      case 'TypeError': return 'bg-purple-500 hover:bg-purple-600';
-      default: return 'bg-gray-500';
+      case 'SyntaxError': return 'from-blue-400 to-blue-600';
+      case 'ReferenceError': return 'from-green-400 to-green-600';
+      case 'TypeError': return 'from-purple-400 to-purple-600';
+      default: return 'from-gray-400 to-gray-600';
     }
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="container mx-auto px-4 py-8">
+    <main className="min-h-screen bg-black text-white font-mono overflow-hidden">
+      <div className="container mx-auto px-4 py-8 h-screen">
         {!gameStarted ? (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Ready to Hunt Bugs?
+          <div className="max-w-2xl mx-auto bg-gradient-to-br from-gray-900 to-black border-4 border-cyan-400 rounded-lg shadow-lg shadow-cyan-400/50 p-8 text-center">
+            <h1 className="text-4xl font-bold text-cyan-400 mb-4 text-shadow-glow animate-pulse">
+              🐻 SMART BEAR CODE HUNT 🐻
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Click on bugs to catch them. Different error types are worth different points!
+            <div className="text-yellow-400 text-lg mb-6">
+              === RETRO ARCADE CHALLENGE ===
+            </div>
+            <p className="text-green-400 mb-6 text-lg">
+              Use ← → arrow keys to move SmartBear with his bug net!<br />
+              Catch falling code errors to score points!
             </p>
-            <div className="mb-6 space-y-2">
-              <p className="text-blue-600 dark:text-blue-400">🐛 SyntaxError: 5-10 points</p>
-              <p className="text-green-600 dark:text-green-400">🐛 ReferenceError: 15-25 points</p>
-              <p className="text-purple-600 dark:text-purple-400">🐛 TypeError: 30-50 points</p>
+            <div className="mb-6 space-y-2 text-left max-w-md mx-auto">
+              <div className="flex justify-between">
+                <span className="text-blue-400">💾 SyntaxError:</span>
+                <span className="text-white">5-10 points</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-green-400">🔗 ReferenceError:</span>
+                <span className="text-white">15-25 points</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-purple-400">⚡ TypeError:</span>
+                <span className="text-white">30-50 points</span>
+              </div>
             </div>
             <button
               onClick={startGame}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors"
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-3 px-8 rounded-lg text-xl transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-yellow-400/50 border-2 border-yellow-300"
             >
-              Start Game
+              ▶ START GAME ◀
             </button>
             <div className="mt-4">
-              <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <Link href="/" className="text-cyan-400 hover:text-cyan-300 underline">
                 ← Back to Home
               </Link>
             </div>
           </div>
         ) : gameOver ? (
-          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Game Over!
+          <div className="max-w-2xl mx-auto bg-gradient-to-br from-gray-900 to-black border-4 border-cyan-400 rounded-lg shadow-lg shadow-cyan-400/50 p-8 text-center">
+            <h1 className="text-4xl font-bold text-red-400 mb-4 animate-pulse">
+              GAME OVER!
             </h1>
-            <p className="text-5xl font-bold text-indigo-600 mb-4">{score} Points</p>
+            <p className="text-6xl font-bold text-yellow-400 mb-4 text-shadow-glow">{score}</p>
+            <p className="text-cyan-400 text-xl mb-6">FINAL SCORE</p>
             {score >= 80 ? (
               <>
-                <div className="bg-green-100 dark:bg-green-900 border-l-4 border-green-500 p-4 mb-6">
-                  <p className="text-green-800 dark:text-green-200 font-semibold text-lg">
-                    🎉 Congratulations! You qualified for SmartBear swag!
+                <div className="bg-gradient-to-r from-green-900 to-emerald-900 border-2 border-green-400 p-4 mb-6 rounded-lg">
+                  <p className="text-green-400 font-bold text-xl animate-pulse">
+                    🏆 VICTORY! YOU QUALIFIED FOR SMARTBEAR SWAG! 🏆
                   </p>
                 </div>
                 {!showForm ? (
                   <button
                     onClick={() => setShowForm(true)}
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors mb-4"
+                    className="bg-gradient-to-r from-green-400 to-emerald-500 text-black font-bold py-3 px-8 rounded-lg text-xl transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-green-400/50 border-2 border-green-300 mb-4"
                   >
-                    Claim Your Swag
+                    🎁 CLAIM YOUR SWAG 🎁
                   </button>
                 ) : (
-                  <div className="mb-6 text-left">
-                    <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
-                      Enter Your Details
+                  <div className="mb-6 text-left max-w-md mx-auto">
+                    <h3 className="text-xl font-bold mb-4 text-cyan-400">
+                      ENTER CONTACT DATA:
                     </h3>
                     <form className="space-y-4">
                       <div>
-                        <label className="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
+                        <label className="block text-green-400 mb-2 font-bold">NAME:</label>
                         <input
                           type="text"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          placeholder="Your name"
+                          className="w-full px-4 py-2 border-2 border-cyan-400 rounded bg-black text-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 font-mono"
+                          placeholder="Enter your name..."
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                        <label className="block text-green-400 mb-2 font-bold">EMAIL:</label>
                         <input
                           type="email"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          className="w-full px-4 py-2 border-2 border-cyan-400 rounded bg-black text-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 font-mono"
                           placeholder="your@email.com"
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-700 dark:text-gray-300 mb-2">Company</label>
+                        <label className="block text-green-400 mb-2 font-bold">COMPANY:</label>
                         <input
                           type="text"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          placeholder="Your company"
+                          className="w-full px-4 py-2 border-2 border-cyan-400 rounded bg-black text-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 font-mono"
+                          placeholder="Your company..."
                         />
                       </div>
                       <button
                         type="submit"
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
+                        className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-400/50 border-2 border-cyan-300"
                       >
-                        Submit
+                        📡 TRANSMIT DATA 📡
                       </button>
                     </form>
                   </div>
                 )}
               </>
             ) : (
-              <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 p-4 mb-6">
-                <p className="text-yellow-800 dark:text-yellow-200">
-                  You need 80+ points to qualify. Try again!
+              <div className="bg-gradient-to-r from-yellow-900 to-orange-900 border-2 border-yellow-400 p-4 mb-6 rounded-lg">
+                <p className="text-yellow-400 font-bold">
+                  ⚠ NEED 80+ POINTS TO QUALIFY ⚠
                 </p>
+                <p className="text-orange-400">TRY AGAIN, CODER!</p>
               </div>
             )}
             <div className="space-x-4">
               <button
                 onClick={startGame}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors"
+                className="bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold py-2 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-blue-400/50 border-2 border-blue-300"
               >
-                Play Again
+                🔄 PLAY AGAIN
               </button>
-              <Link href="/" className="inline-block bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
-                Back to Home
+              <Link href="/" className="inline-block bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold py-2 px-6 rounded-lg transition-all transform hover:scale-105 hover:shadow-lg hover:shadow-gray-400/50 border-2 border-gray-500">
+                🏠 MAIN MENU
               </Link>
             </div>
           </div>
         ) : (
           <>
+            {/* Game HUD */}
             <div className="flex justify-between items-center mb-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow px-6 py-3">
-                <span className="text-gray-700 dark:text-gray-300">Score: </span>
-                <span className="text-2xl font-bold text-indigo-600">{score}</span>
+              <div className="bg-gradient-to-r from-gray-900 to-black border-2 border-cyan-400 rounded-lg shadow px-6 py-3">
+                <span className="text-cyan-400 font-bold">SCORE: </span>
+                <span className="text-2xl font-bold text-yellow-400">{score}</span>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow px-6 py-3">
-                <span className="text-gray-700 dark:text-gray-300">Time: </span>
-                <span className="text-2xl font-bold text-red-600">{timeLeft}s</span>
+              <div className="bg-gradient-to-r from-gray-900 to-black border-2 border-red-400 rounded-lg shadow px-6 py-3">
+                <span className="text-cyan-400 font-bold">TIME: </span>
+                <span className="text-2xl font-bold text-red-400">{timeLeft}s</span>
               </div>
             </div>
-            <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg" style={{ height: '70vh' }}>
+
+            {/* Game Arena */}
+            <div className="relative bg-gradient-to-b from-indigo-950 via-purple-950 to-black border-4 border-cyan-400 rounded-lg shadow-lg shadow-cyan-400/30" style={{ height: '70vh' }}>
+              {/* Starfield background */}
+              <div className="absolute inset-0 opacity-30">
+                {[...Array(50)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animationDelay: `${Math.random() * 2}s`
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Falling Bugs */}
               {bugs.map(bug => (
-                <button
+                <div
                   key={bug.id}
-                  onClick={() => catchBug(bug.id, bug.points)}
-                  className={`absolute ${getBugColor(bug.type)} text-white px-4 py-2 rounded-lg shadow-lg transition-all transform hover:scale-110 cursor-pointer`}
+                  className={`absolute bg-gradient-to-br ${getBugColor(bug.type)} text-white px-3 py-2 rounded-lg shadow-lg border-2 border-white/50 transition-all transform hover:scale-110 cursor-pointer animate-pulse`}
                   style={{ 
                     left: `${bug.x}%`, 
                     top: `${bug.y}%`,
-                    animation: 'float 2s ease-in-out infinite'
+                    transform: 'translate(-50%, -50%)'
                   }}
+                  onClick={() => catchBug(bug.id, bug.points)}
                 >
-                  <div className="text-xs font-mono mb-1">{bug.code}</div>
-                  <div className="text-xs font-semibold">{bug.type}</div>
-                  <div className="text-xs">+{bug.points}pts</div>
-                </button>
+                  <div className="text-xs font-mono mb-1 text-center">{bug.code}</div>
+                  <div className="text-xs font-bold text-center">{bug.type}</div>
+                  <div className="text-xs text-center text-yellow-300">+{bug.points}pts</div>
+                </div>
               ))}
+
+              {/* SmartBear Character */}
+              <div
+                className="absolute bottom-4 transition-all duration-75 ease-linear"
+                style={{ 
+                  left: `${bearPosition}%`,
+                  transform: 'translateX(-50%)'
+                }}
+              >
+                <div className="text-6xl filter drop-shadow-lg animate-bounce">
+                  🐻
+                </div>
+                <div className="text-4xl absolute -top-2 -right-2 animate-pulse">
+                  🕸️
+                </div>
+              </div>
+
+              {/* Controls reminder */}
+              <div className="absolute bottom-4 left-4 text-cyan-400 text-sm">
+                ← → ARROW KEYS TO MOVE
+              </div>
             </div>
           </>
         )}
       </div>
-      <style jsx>{`
+
+      {/* Retro styling */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        .font-mono {
+          font-family: 'Orbitron', 'Courier New', monospace;
+        }
+        
+        .text-shadow-glow {
+          text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+        }
+        
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          0%, 100% { transform: translateY(0px) translateX(-50%); }
+          50% { transform: translateY(-10px) translateX(-50%); }
+        }
+        
+        @keyframes matrix-rain {
+          0% { transform: translateY(-100vh); opacity: 1; }
+          100% { transform: translateY(100vh); opacity: 0; }
+        }
+        
+        .animate-matrix {
+          animation: matrix-rain 3s linear infinite;
+        }
+        
+        body {
+          background: linear-gradient(45deg, #000000, #1a1a2e, #16213e);
+          overflow-x: hidden;
+        }
+        
+        /* Scanlines effect */
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            transparent 50%, 
+            rgba(0, 255, 255, 0.03) 50%
+          );
+          background-size: 100% 4px;
+          pointer-events: none;
+          z-index: 1000;
+        }
+        
+        /* CRT screen curve effect */
+        .container {
+          filter: contrast(1.1) brightness(1.1);
         }
       `}</style>
     </main>
