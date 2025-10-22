@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Game() {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
-  const [bugs, setBugs] = useState<any[]>([]);
+  const [bugs, setBugs] = useState<{id: number; x: number; y: number; code: string; type: string; points: number}[]>([]);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [bearPosition, setBearPosition] = useState(50);
@@ -165,9 +166,9 @@ export default function Game() {
             START GAME
           </button>
           <div style={{ marginTop: '20px' }}>
-            <a href="/" style={{ color: '#00ffff', textDecoration: 'underline' }}>
+            <Link href="/" style={{ color: '#00ffff', textDecoration: 'underline' }}>
               ← Back to Home
-            </a>
+            </Link>
           </div>
         </div>
       ) : gameOver ? (
@@ -248,9 +249,9 @@ export default function Game() {
             <button onClick={startGame} style={{ ...buttonStyle, backgroundColor: '#3b82f6' }}>
               PLAY AGAIN
             </button>
-            <a href="/" style={{ ...buttonStyle, backgroundColor: '#6b7280', textDecoration: 'none', display: 'inline-block' }}>
+            <Link href="/" style={{ ...buttonStyle, backgroundColor: '#6b7280', textDecoration: 'none', display: 'inline-block' }}>
               BACK TO HOME
-            </a>
+            </Link>
           </div>
         </div>
       ) : (
