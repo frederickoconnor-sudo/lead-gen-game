@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
@@ -15,7 +17,6 @@ export default function Home() {
             </p>
           </div>
         </div>
-
         <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">
             How to Play
@@ -49,11 +50,12 @@ export default function Home() {
               </p>
             </div>
           </div>
-
           <div className="text-center">
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors">
-              Start Code Hunt
-            </button>
+            <Link href="/game">
+              <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition-colors">
+                Start Code Hunt
+              </button>
+            </Link>
           </div>
         </div>
       </div>
