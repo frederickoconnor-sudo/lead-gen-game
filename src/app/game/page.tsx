@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
 type Bug = {
@@ -38,7 +38,12 @@ export default function Game() {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [playerName, setPlayerName] = useState('');
 
-  const bugTypes = [
+  const bugTypes: Array<{
+    code: string;
+    type: string;
+    points: number;
+    severity: 'error' | 'warning' | 'info';
+  }> = [
     // Unhandled Exceptions (High severity)
     { code: 'Uncaught Error', type: 'Unhandled Exception', points: 50, severity: 'error' },
     { code: 'Promise.reject()', type: 'Unhandled Promise Rejection', points: 45, severity: 'error' },
@@ -61,7 +66,7 @@ export default function Game() {
     { code: 'Resource Load Failed', type: 'Network Error', points: 20, severity: 'info' }
   ];
 
-  const spawnBug = () => {
+  const spawnBug = useCallback(() => {
     const bugType = bugTypes[Math.floor(Math.random() * bugTypes.length)];
     const newBug = {
       id: Date.now() + Math.random(),
@@ -70,16 +75,16 @@ export default function Game() {
       ...bugType
     };
     setBugs(prev => [...prev, newBug]);
-  };
+  }, []);
 
-  const shoot = () => {
+  const shoot = useCallback(() => {
     const newBullet = {
       id: Date.now() + Math.random(),
       x: shipPosition,
       y: 90
     };
     setBullets(prev => [...prev, newBullet]);
-  };
+  }, [shipPosition]);
 
   // Load leaderboard from localStorage on component mount
   useEffect(() => {
