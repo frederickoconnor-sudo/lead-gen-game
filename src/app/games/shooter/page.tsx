@@ -325,9 +325,12 @@ export default function Game() {
           <button onClick={startGame} style={buttonStyle}>
             INSERT COIN
           </button>
-          <div style={{ marginTop: '20px' }}>
+          <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
+            <Link href="/games" style={{ color: '#00ff41', textDecoration: 'underline', fontSize: '14px' }}>
+              ← Back to Games
+            </Link>
             <Link href="/" style={{ color: '#00ff41', textDecoration: 'underline', fontSize: '14px' }}>
-              ← Back to Home
+              🏠 Home
             </Link>
           </div>
         </div>
@@ -533,8 +536,8 @@ export default function Game() {
                 🏆 VIEW LEADERBOARD
               </button>
             )}
-            <Link href="/" style={{ ...buttonStyle, backgroundColor: '#6b7280', textDecoration: 'none', display: 'inline-block' }}>
-              🏠 BACK TO HOME
+            <Link href="/games" style={{ ...buttonStyle, backgroundColor: '#6b7280', textDecoration: 'none', display: 'inline-block' }}>
+              🎮 BACK TO GAMES
             </Link>
           </div>
         </div>
