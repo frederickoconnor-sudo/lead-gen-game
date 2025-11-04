@@ -34,7 +34,7 @@ export default function DebugRunner() {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [distance, setDistance] = useState(0);
-  const [speed, setSpeed] = useState(3);
+  const [speed, setSpeed] = useState(1.5);
   
   // Player state
   const [playerY, setPlayerY] = useState(60); // % from top
@@ -55,14 +55,14 @@ export default function DebugRunner() {
   const JUMP_HEIGHT = 30; // pixels above ground
   const DUCK_HEIGHT = 45; // % from top when ducking
 
-  // Error types from Bugsnag
+  // Error types from Bugsnag - made larger and more readable
   const errorTypes = [
-    { type: 'error', name: 'Unhandled Exception', height: 40, width: 60 },
-    { type: 'error', name: 'Promise Rejection', height: 35, width: 55 },
-    { type: 'warning', name: 'Memory Leak', height: 30, width: 70 },
-    { type: 'warning', name: 'Slow Network', height: 25, width: 80 },
-    { type: 'info', name: 'Console Warning', height: 20, width: 50 },
-    { type: 'info', name: 'Deprecated API', height: 15, width: 60 }
+    { type: 'error', name: 'Unhandled Exception', height: 60, width: 120 },
+    { type: 'error', name: 'Promise Rejection', height: 55, width: 115 },
+    { type: 'warning', name: 'Memory Leak', height: 50, width: 110 },
+    { type: 'warning', name: 'Slow Network', height: 45, width: 120 },
+    { type: 'info', name: 'Console Warning', height: 40, width: 100 },
+    { type: 'info', name: 'Deprecated API', height: 35, width: 110 }
   ];
 
   const powerUpTypes = [
@@ -137,7 +137,7 @@ export default function DebugRunner() {
       setTimeout(() => {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
-      }, 600);
+      }, 800);
     }
   }, [isJumping, isDucking, gameStarted, gameOver]);
 
@@ -202,12 +202,12 @@ export default function DebugRunner() {
 
       // Update distance and speed
       setDistance(prev => prev + 1);
-      setSpeed(prev => Math.min(prev + 0.001, 8)); // Gradually increase speed
+      setSpeed(prev => Math.min(prev + 0.0005, 4)); // Gradually increase speed more slowly
 
-      // Spawn new obstacles and power-ups
-      if (Math.random() < 0.02) spawnObstacle();
-      if (Math.random() < 0.008) spawnPowerUp();
-    }, 50);
+      // Spawn new obstacles and power-ups less frequently
+      if (Math.random() < 0.015) spawnObstacle();
+      if (Math.random() < 0.006) spawnPowerUp();
+    }, 80);
 
     return () => clearInterval(gameLoop);
   }, [gameStarted, gameOver, speed, spawnObstacle, spawnPowerUp]);
@@ -222,10 +222,15 @@ export default function DebugRunner() {
       const playerTop = playerY;
       const playerBottom = playerY + (isDucking ? 15 : 20);
 
-      // Check obstacle collisions
+      // Check obstacle collisions - made more forgiving
       obstacles.forEach(obs => {
-        if (obs.x < playerRight && obs.x + obs.width > playerLeft &&
-            obs.y < playerBottom && obs.y + obs.height > playerTop) {
+        const obsLeft = obs.x + 10; // Add padding to make collisions more forgiving
+        const obsRight = obs.x + obs.width - 10;
+        const obsTop = obs.y + 5;
+        const obsBottom = obs.y + obs.height - 5;
+        
+        if (obsLeft < playerRight && obsRight > playerLeft &&
+            obsTop < playerBottom && obsBottom > playerTop) {
           setGameOver(true);
         }
       });
@@ -250,7 +255,7 @@ export default function DebugRunner() {
     setGameOver(false);
     setScore(0);
     setDistance(0);
-    setSpeed(3);
+    setSpeed(1.5);
     setPlayerY(GROUND_Y);
     setIsJumping(false);
     setIsDucking(false);
@@ -613,7 +618,7 @@ export default function DebugRunner() {
           }}>
             {/* Player Character */}
             <div style={playerStyle}>
-              {isDucking ? '🤸‍♂️' : isJumping ? '🏃‍♂️' : '🏃‍♂️'}
+              {isDucking ? '🏃‍♂️' : isJumping ? '🦘' : '🏃‍♂️'}
             </div>
 
             {/* Obstacles */}
@@ -633,21 +638,26 @@ export default function DebugRunner() {
                     width: `${obs.width}px`,
                     height: `${obs.height}px`,
                     background: colors[obs.type],
-                    border: '2px solid #fff',
-                    borderRadius: '4px',
+                    border: '3px solid #fff',
+                    borderRadius: '6px',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '10px',
+                    fontSize: '14px',
                     fontWeight: 'bold',
                     color: '#fff',
                     textAlign: 'center' as const,
-                    boxShadow: `0 0 10px ${colors[obs.type]}`
+                    boxShadow: `0 0 15px ${colors[obs.type]}`,
+                    padding: '8px'
                   }}
                 >
-                  {obs.type === 'error' ? '🔥' : obs.type === 'warning' ? '⚠️' : 'ℹ️'}
-                  <br />
-                  {obs.errorType}
+                  <div style={{ fontSize: '18px', marginBottom: '4px' }}>
+                    {obs.type === 'error' ? '🔥' : obs.type === 'warning' ? '⚠️' : 'ℹ️'}
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: '1.2' }}>
+                    {obs.errorType}
+                  </div>
                 </div>
               );
             })}
