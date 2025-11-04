@@ -48,30 +48,64 @@ export default function GamesIndex() {
             </Link>
           </div>
           
-          {/* Placeholder for New Game */}
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border-2 border-yellow-400 shadow-lg transform hover:scale-105 transition-all duration-300" style={{ boxShadow: '0 0 20px rgba(255, 193, 7, 0.3)' }}>
+          {/* Debug Runner Game */}
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border-2 border-blue-400 shadow-lg transform hover:scale-105 transition-all duration-300" style={{ boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' }}>
             <div className="text-center mb-4">
-              <div className="text-6xl mb-4">🎯</div>
-              <h2 className="text-2xl font-bold text-yellow-400 mb-2">
-                New Game Coming Soon!
+              <div className="text-6xl mb-4">🏃‍♂️</div>
+              <h2 className="text-2xl font-bold text-blue-400 mb-2">
+                Debug Runner
               </h2>
               <p className="text-gray-300 text-sm mb-4">
-                What type of game would you like to build next?
+                Endless platform runner! Jump over errors, duck under warnings, and collect monitoring tools.
               </p>
             </div>
             
             <div className="space-y-2 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Status:</span>
-                <span className="text-yellow-400">In Development</span>
+                <span className="text-gray-400">Difficulty:</span>
+                <span className="text-orange-400">⭐⭐⭐⭐</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Genre:</span>
-                <span className="text-blue-400">Your Choice!</span>
+                <span className="text-blue-400">Endless Runner</span>
               </div>
               <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Features:</span>
+                <span className="text-purple-400">Speed Progression</span>
+              </div>
+            </div>
+            
+            <Link href="/games/runner">
+              <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                🏃‍♂️ START RUNNING
+              </button>
+            </Link>
+          </div>
+
+          {/* Placeholder for Future Game */}
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-6 border-2 border-yellow-400 shadow-lg transform hover:scale-105 transition-all duration-300" style={{ boxShadow: '0 0 20px rgba(255, 193, 7, 0.3)' }}>
+            <div className="text-center mb-4">
+              <div className="text-6xl mb-4">🎯</div>
+              <h2 className="text-2xl font-bold text-yellow-400 mb-2">
+                More Games Coming!
+              </h2>
+              <p className="text-gray-300 text-sm mb-4">
+                What other Bugsnag-themed games should we build?
+              </p>
+            </div>
+            
+            <div className="space-y-2 mb-6">
+              <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Ideas:</span>
-                <span className="text-purple-400">Puzzle, Action, Strategy</span>
+                <span className="text-purple-400">Puzzle, Tower Defense</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Status:</span>
+                <span className="text-yellow-400">Awaiting Ideas</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Suggestions:</span>
+                <span className="text-blue-400">Always Welcome!</span>
               </div>
             </div>
             

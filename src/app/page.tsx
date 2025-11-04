@@ -54,36 +54,38 @@ export default function Home() {
               </Link>
             </div>
             
-            {/* More Games Coming */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-dashed border-gray-400">
+            {/* Debug Runner */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-blue-400 hover:border-blue-300 transition-colors">
               <div className="text-center mb-4">
-                <div className="text-6xl mb-3">🎯</div>
+                <div className="text-6xl mb-3">🏃‍♂️</div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  More Games Coming!
+                  Debug Runner
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  What type of Bugsnag-themed game would you like to see next?
+                  Endless platform runner! Jump over errors, duck under warnings, collect monitoring tools.
                 </p>
               </div>
               
               <div className="space-y-2 mb-6 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Ideas:</span>
-                  <span className="text-purple-600">Puzzle, Strategy, Action</span>
+                  <span className="text-gray-500">Controls:</span>
+                  <span className="text-blue-600">↑ Jump, ↓ Duck</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Status:</span>
-                  <span className="text-yellow-600">In Development</span>
+                  <span className="text-gray-500">High Score:</span>
+                  <span className="text-green-600">Leaderboard Available</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Suggestions:</span>
-                  <span className="text-blue-600">Always Welcome!</span>
+                  <span className="text-gray-500">Difficulty:</span>
+                  <span className="text-orange-600">⭐⭐⭐⭐</span>
                 </div>
               </div>
               
-              <button disabled className="w-full bg-gray-400 text-gray-600 font-bold py-3 px-6 rounded-lg cursor-not-allowed">
-                🚧 COMING SOON
-              </button>
+              <Link href="/games/runner">
+                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105">
+                  🏃‍♂️ START RUNNING
+                </button>
+              </Link>
             </div>
           </div>
           
