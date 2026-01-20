@@ -667,8 +667,8 @@ export default function Game() {
               pointerEvents: 'none'
             }} />
           </div>
-        </>
+        
 
     </div>
-  );
+
 }
