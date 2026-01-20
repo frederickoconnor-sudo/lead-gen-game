@@ -326,13 +326,6 @@ export default function Game() {
             INSERT COIN
           </button>
           <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-            <Link href="/games" style={{ color: '#00ff41', textDecoration: 'underline', fontSize: '14px' }}>
-              ← Back to Games
-            </Link>
-            <Link href="/" style={{ color: '#00ff41', textDecoration: 'underline', fontSize: '14px' }}>
-              🏠 Home
-            </Link>
-          </div>
         </div>
       ) : gameOver ? (
         <div style={startScreenStyle}>
