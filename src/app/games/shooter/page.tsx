@@ -325,7 +325,6 @@ export default function Game() {
           <button onClick={startGame} style={buttonStyle}>
             INSERT COIN
           </button>
-          <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
         </div>
       ) : gameOver ? (
         <div style={startScreenStyle}>
@@ -666,9 +665,9 @@ export default function Game() {
               backgroundSize: '20px 20px',
               pointerEvents: 'none'
             }} />
-          </div>
-        
-
+                   </div>
+        </>
+      )}
     </div>
-
+  );
 }
