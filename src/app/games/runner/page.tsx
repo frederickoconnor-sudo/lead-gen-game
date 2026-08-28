@@ -3,29 +3,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 
-type Obstacle = {
+type GameItem = {
   id: number;
   x: number;
   y: number;
-  type: 'error' | 'warning' | 'info';
-  errorType: string;
-  width: number;
-  height: number;
-};
-
-type PowerUp = {
-  id: number;
-  x: number;
-  y: number;
-  type: 'performance' | 'monitoring' | 'debugging';
+  type: 'good' | 'bad';
   name: string;
   points: number;
+  lane: number;
 };
 
 type LeaderboardEntry = {
   name: string;
   score: number;
-  distance: number;
+  time: number;
   date: string;
 };
 
@@ -33,17 +24,15 @@ export default function DebugRunner() {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
-  const [distance, setDistance] = useState(0);
-  const [speed, setSpeed] = useState(1.5);
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
+  const [health, setHealth] = useState(3);
+  const [speed, setSpeed] = useState(2);
   
-  // Player state
-  const [playerY, setPlayerY] = useState(60); // % from top
-  const [isJumping, setIsJumping] = useState(false);
-  const [isDucking, setIsDucking] = useState(false);
+  // Player state - lane-based movement
+  const [playerLane, setPlayerLane] = useState(1); // 0, 1, 2 (left, center, right)
   
   // Game objects
-  const [obstacles, setObstacles] = useState<Obstacle[]>([]);
-  const [powerUps, setPowerUps] = useState<PowerUp[]>([]);
+  const [gameItems, setGameItems] = useState<GameItem[]>([]);
   
   // UI state
   const [showLeaderboard, setShowLeaderboard] = useState(false);
@@ -51,42 +40,42 @@ export default function DebugRunner() {
   const [playerName, setPlayerName] = useState('');
 
   // Game constants
-  const GROUND_Y = 60; // % from top
-  const JUMP_HEIGHT = 30; // pixels above ground
-  const DUCK_HEIGHT = 45; // % from top when ducking
+  const LANES = [20, 50, 80]; // Three lanes at 20%, 50%, 80% from left
 
-  // Error types from Bugsnag - made larger and more readable
-  const errorTypes = [
-    { type: 'error', name: 'Unhandled Exception', height: 60, width: 120 },
-    { type: 'error', name: 'Promise Rejection', height: 55, width: 115 },
-    { type: 'warning', name: 'Memory Leak', height: 50, width: 110 },
-    { type: 'warning', name: 'Slow Network', height: 45, width: 120 },
-    { type: 'info', name: 'Console Warning', height: 40, width: 100 },
-    { type: 'info', name: 'Deprecated API', height: 35, width: 110 }
-  ];
-
-  const powerUpTypes = [
-    { type: 'performance', name: 'CPU Boost', points: 50 },
-    { type: 'monitoring', name: 'Error Tracker', points: 30 },
-    { type: 'debugging', name: 'Stack Trace', points: 40 },
-    { type: 'performance', name: 'Memory Optimizer', points: 60 },
-    { type: 'monitoring', name: 'Alert System', points: 35 }
-  ];
+  // Game items
+  const itemTypes = {
+    good: [
+      { name: '✅ Bug Fixed', points: 25 },
+      { name: '📊 Monitor Added', points: 20 },
+      { name: '🔍 Debug Tool', points: 30 },
+      { name: '⚡ Performance Boost', points: 35 },
+      { name: '🛡️ Error Handler', points: 25 },
+      { name: '📈 Analytics Setup', points: 20 }
+    ],
+    bad: [
+      { name: '💥 System Crash', points: -15 },
+      { name: '⚠️ Memory Leak', points: -10 },
+      { name: '🚫 Null Reference', points: -15 },
+      { name: '🐌 Timeout Error', points: -10 },
+      { name: '💔 Connection Lost', points: -12 },
+      { name: '🔥 Exception Thrown', points: -15 }
+    ]
+  };
 
   // Load leaderboard
   useEffect(() => {
-    const saved = localStorage.getItem('debug-runner-leaderboard');
+    const saved = localStorage.getItem('debug-runner-v2-leaderboard');
     if (saved) {
       setLeaderboard(JSON.parse(saved));
     }
   }, []);
 
   // Save to leaderboard
-  const saveToLeaderboard = useCallback((name: string, finalScore: number, finalDistance: number) => {
+  const saveToLeaderboard = useCallback((name: string, finalScore: number, timeSpent: number) => {
     const newEntry: LeaderboardEntry = {
       name: name.trim() || 'Anonymous',
       score: finalScore,
-      distance: finalDistance,
+      time: timeSpent,
       date: new Date().toLocaleDateString()
     };
     
@@ -95,198 +84,140 @@ export default function DebugRunner() {
       .slice(0, 10);
     
     setLeaderboard(updated);
-    localStorage.setItem('debug-runner-leaderboard', JSON.stringify(updated));
+    localStorage.setItem('debug-runner-v2-leaderboard', JSON.stringify(updated));
     setShowLeaderboard(true);
   }, [leaderboard]);
 
-  // Spawn obstacles
-  const spawnObstacle = useCallback(() => {
-    const errorType = errorTypes[Math.floor(Math.random() * errorTypes.length)];
-    const obstacle: Obstacle = {
+  // Spawn game items
+  const spawnGameItem = useCallback(() => {
+    const isGood = Math.random() < 0.7; // 70% chance of good items
+    const itemArray = isGood ? itemTypes.good : itemTypes.bad;
+    const item = itemArray[Math.floor(Math.random() * itemArray.length)];
+    const randomLane = Math.floor(Math.random() * 3);
+    
+    const gameItem: GameItem = {
       id: Date.now() + Math.random(),
-      x: 100, // Start from right edge
-      y: GROUND_Y - errorType.height,
-      type: errorType.type as 'error' | 'warning' | 'info',
-      errorType: errorType.name,
-      width: errorType.width,
-      height: errorType.height
+      x: LANES[randomLane],
+      y: 0,
+      type: isGood ? 'good' : 'bad',
+      name: item.name,
+      points: item.points,
+      lane: randomLane
     };
-    setObstacles(prev => [...prev, obstacle]);
+    
+    setGameItems(prev => [...prev, gameItem]);
   }, []);
 
-  // Spawn power-ups
-  const spawnPowerUp = useCallback(() => {
-    const powerType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
-    const powerUp: PowerUp = {
-      id: Date.now() + Math.random(),
-      x: 100,
-      y: Math.random() * 40 + 20, // Random height in upper area
-      type: powerType.type as 'performance' | 'monitoring' | 'debugging',
-      name: powerType.name,
-      points: powerType.points
-    };
-    setPowerUps(prev => [...prev, powerUp]);
-  }, []);
-
-  // Jump mechanics
-  const jump = useCallback(() => {
-    if (!isJumping && !isDucking && gameStarted && !gameOver) {
-      setIsJumping(true);
-      setPlayerY(GROUND_Y - JUMP_HEIGHT);
-      
-      setTimeout(() => {
-        setPlayerY(GROUND_Y);
-        setIsJumping(false);
-      }, 800);
+  // Handle item click
+  const handleItemClick = (item: GameItem) => {
+    if (item.type === 'good') {
+      setScore(prev => prev + item.points);
+    } else {
+      setScore(prev => Math.max(0, prev + item.points));
+      setHealth(prev => Math.max(0, prev - 1));
     }
-  }, [isJumping, isDucking, gameStarted, gameOver]);
+    
+    // Remove the clicked item
+    setGameItems(prev => prev.filter(i => i.id !== item.id));
+  };
 
-  // Duck mechanics
-  const startDuck = useCallback(() => {
-    if (!isJumping && !isDucking && gameStarted && !gameOver) {
-      setIsDucking(true);
-      setPlayerY(DUCK_HEIGHT);
-    }
-  }, [isJumping, isDucking, gameStarted, gameOver]);
-
-  const stopDuck = useCallback(() => {
-    if (isDucking) {
-      setIsDucking(false);
-      setPlayerY(GROUND_Y);
-    }
-  }, [isDucking]);
+  // Player movement
+  const movePlayer = useCallback((direction: 'left' | 'right') => {
+    if (!gameStarted || gameOver) return;
+    
+    setPlayerLane(prev => {
+      if (direction === 'left') {
+        return Math.max(0, prev - 1);
+      } else {
+        return Math.min(2, prev + 1);
+      }
+    });
+  }, [gameStarted, gameOver]);
 
   // Keyboard controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ' || e.key === 'ArrowUp') {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         e.preventDefault();
-        jump();
-      } else if (e.key === 'ArrowDown') {
+        movePlayer('left');
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
         e.preventDefault();
-        startDuck();
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        stopDuck();
+        movePlayer('right');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [jump, startDuck, stopDuck]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [movePlayer]);
+
+  // Game timer
+  useEffect(() => {
+    if (gameStarted && !gameOver && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            setGameOver(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [gameStarted, gameOver, timeLeft]);
+
+  // Check for game over
+  useEffect(() => {
+    if (health <= 0) {
+      setGameOver(true);
+    }
+  }, [health]);
 
   // Game loop
   useEffect(() => {
     if (!gameStarted || gameOver) return;
 
     const gameLoop = setInterval(() => {
-      // Move obstacles
-      setObstacles(prev => prev.map(obs => ({
-        ...obs,
-        x: obs.x - speed
-      })).filter(obs => obs.x > -20));
+      // Move items down
+      setGameItems(prev => prev.map(item => ({
+        ...item,
+        y: item.y + speed
+      })).filter(item => item.y < 100)); // Remove items that went off screen
 
-      // Move power-ups
-      setPowerUps(prev => prev.map(power => ({
-        ...power,
-        x: power.x - speed
-      })).filter(power => power.x > -20));
+      // Gradually increase speed
+      setSpeed(prev => Math.min(prev + 0.002, 5));
 
-      // Update distance and speed
-      setDistance(prev => prev + 1);
-      setSpeed(prev => Math.min(prev + 0.0005, 4)); // Gradually increase speed more slowly
-
-      // Spawn new obstacles and power-ups less frequently
-      if (Math.random() < 0.015) spawnObstacle();
-      if (Math.random() < 0.006) spawnPowerUp();
-    }, 80);
+      // Spawn new items
+      if (Math.random() < 0.03) {
+        spawnGameItem();
+      }
+    }, 50);
 
     return () => clearInterval(gameLoop);
-  }, [gameStarted, gameOver, speed, spawnObstacle, spawnPowerUp]);
+  }, [gameStarted, gameOver, speed, spawnGameItem]);
 
-  // Collision detection
+  // Handle missed bad items (they cause damage if they reach the bottom)
   useEffect(() => {
     if (!gameStarted || gameOver) return;
 
-    const checkCollisions = () => {
-      const playerLeft = 10;
-      const playerRight = 20;
-      const playerTop = playerY;
-      const playerBottom = playerY + (isDucking ? 15 : 20);
-
-      // Check obstacle collisions - made more forgiving
-      obstacles.forEach(obs => {
-        const obsLeft = obs.x + 10; // Add padding to make collisions more forgiving
-        const obsRight = obs.x + obs.width - 10;
-        const obsTop = obs.y + 5;
-        const obsBottom = obs.y + obs.height - 5;
-        
-        if (obsLeft < playerRight && obsRight > playerLeft &&
-            obsTop < playerBottom && obsBottom > playerTop) {
-          setGameOver(true);
-        }
-      });
-
-      // Check power-up collisions
-      setPowerUps(prev => prev.filter(power => {
-        if (power.x < playerRight && power.x + 15 > playerLeft &&
-            power.y < playerBottom && power.y + 15 > playerTop) {
-          setScore(s => s + power.points);
-          return false; // Remove collected power-up
-        }
-        return true;
-      }));
-    };
-
-    const collisionCheck = setInterval(checkCollisions, 50);
-    return () => clearInterval(collisionCheck);
-  }, [gameStarted, gameOver, obstacles, powerUps, playerY, isDucking]);
+    const missedItems = gameItems.filter(item => item.y > 85 && item.type === 'bad');
+    if (missedItems.length > 0) {
+      setHealth(prev => Math.max(0, prev - missedItems.length));
+      setGameItems(prev => prev.filter(item => !(item.y > 85 && item.type === 'bad')));
+    }
+  }, [gameItems, gameStarted, gameOver]);
 
   const startGame = () => {
     setGameStarted(true);
     setGameOver(false);
     setScore(0);
-    setDistance(0);
-    setSpeed(1.5);
-    setPlayerY(GROUND_Y);
-    setIsJumping(false);
-    setIsDucking(false);
-    setObstacles([]);
-    setPowerUps([]);
+    setTimeLeft(120);
+    setHealth(3);
+    setSpeed(2);
+    setPlayerLane(1);
+    setGameItems([]);
     setShowLeaderboard(false);
     setPlayerName('');
-  };
-
-  const gameAreaStyle = {
-    width: '100%',
-    height: '400px',
-    background: 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    border: '3px solid #00ffff',
-    position: 'relative' as const,
-    overflow: 'hidden',
-    fontFamily: 'Monaco, Consolas, monospace'
-  };
-
-  const playerStyle = {
-    position: 'absolute' as const,
-    left: '10%',
-    top: `${playerY}%`,
-    width: '40px',
-    height: isDucking ? '30px' : '40px',
-    fontSize: isDucking ? '24px' : '32px',
-    transition: isJumping ? 'top 0.3s ease-out' : 'top 0.2s ease-in',
-    zIndex: 100,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
   };
 
   return (
@@ -312,7 +243,7 @@ export default function DebugRunner() {
             🏃‍♂️ DEBUG RUNNER 🏃‍♂️
           </h1>
           <h2 style={{ fontSize: '24px', color: '#ffa500', marginBottom: '30px' }}>
-            Endless Platform Action
+            Lane-Based Collection Game
           </h2>
           
           <div style={{
@@ -323,21 +254,14 @@ export default function DebugRunner() {
             borderRadius: '8px'
           }}>
             <h3 style={{ color: '#00ffff', marginBottom: '15px' }}>HOW TO PLAY:</h3>
-            <div style={{ textAlign: 'left' as const, lineHeight: '1.6' }}>
-              <p>🏃‍♂️ <strong>RUN</strong> through different code environments</p>
-              <p>⬆️ <strong>JUMP</strong> over errors with SPACEBAR or ↑</p>
-              <p>⬇️ <strong>DUCK</strong> under warnings with ↓</p>
-              <p>💎 <strong>COLLECT</strong> monitoring tools for points</p>
-              <p>📊 <strong>SURVIVE</strong> as long as possible!</p>
-            </div>
-          </div>
-
-          <div style={{ marginBottom: '30px' }}>
-            <h3 style={{ color: '#ffa500', marginBottom: '15px' }}>BUGSNAG ERROR TYPES:</h3>
-            <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' as const, gap: '10px' }}>
-              <span style={{ color: '#ff4444' }}>🔥 Critical Errors</span>
-              <span style={{ color: '#ffaa00' }}>⚠️ Performance Issues</span>
-              <span style={{ color: '#4488ff' }}>ℹ️ Minor Warnings</span>
+            <div style={{ textAlign: 'left' as const, lineHeight: '1.8', fontSize: '16px' }}>
+              <p><strong>🎯 GOAL:</strong> Collect good items, avoid bad ones!</p>
+              <p><strong>⬅️➡️ MOVE:</strong> Use arrow keys or A/D to switch lanes</p>
+              <p><strong>🖱️ COLLECT:</strong> Click on items to collect them</p>
+              <p><strong>✅ GOOD ITEMS:</strong> Green items give points (20-35pts)</p>
+              <p><strong>❌ BAD ITEMS:</strong> Red items remove points & health</p>
+              <p><strong>❤️ HEALTH:</strong> You have 3 lives - don&apos;t lose them all!</p>
+              <p><strong>⏰ TIME:</strong> Survive for 2 minutes to win!</p>
             </div>
           </div>
 
@@ -356,7 +280,7 @@ export default function DebugRunner() {
               boxShadow: '0 0 20px #00ffff'
             }}
           >
-            🚀 START RUNNING
+            🚀 START GAME
           </button>
 
           <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
@@ -381,15 +305,15 @@ export default function DebugRunner() {
         }}>
           {!showLeaderboard ? (
             <>
-              <h1 style={{ fontSize: '42px', color: '#ff4444', marginBottom: '20px' }}>
-                💥 GAME OVER 💥
+              <h1 style={{ fontSize: '42px', color: timeLeft === 0 ? '#00ff00' : '#ff4444', marginBottom: '20px' }}>
+                {timeLeft === 0 ? '🎉 TIME UP! 🎉' : '💥 GAME OVER 💥'}
               </h1>
               <div style={{ marginBottom: '30px' }}>
                 <p style={{ fontSize: '32px', color: '#00ffff', marginBottom: '10px' }}>
                   SCORE: {score}
                 </p>
-                <p style={{ fontSize: '24px', color: '#ffa500' }}>
-                  DISTANCE: {Math.floor(distance / 10)}m
+                <p style={{ fontSize: '20px', color: '#ffa500' }}>
+                  TIME SURVIVED: {Math.floor((120 - timeLeft) / 60)}:{String((120 - timeLeft) % 60).padStart(2, '0')}
                 </p>
               </div>
 
@@ -422,7 +346,7 @@ export default function DebugRunner() {
                   onChange={(e) => setPlayerName(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && playerName.trim()) {
-                      saveToLeaderboard(playerName, score, Math.floor(distance / 10));
+                      saveToLeaderboard(playerName, score, 120 - timeLeft);
                     }
                   }}
                   placeholder="Your Name"
@@ -440,7 +364,7 @@ export default function DebugRunner() {
                 />
                 <br />
                 <button
-                  onClick={() => saveToLeaderboard(playerName, score, Math.floor(distance / 10))}
+                  onClick={() => saveToLeaderboard(playerName, score, 120 - timeLeft)}
                   style={{
                     background: '#00ffff',
                     color: '#000',
@@ -492,7 +416,7 @@ export default function DebugRunner() {
                           {entry.score}pts
                         </span>
                         <span style={{ color: '#00ff00', marginRight: '15px' }}>
-                          {entry.distance}m
+                          {Math.floor(entry.time / 60)}:{String(entry.time % 60).padStart(2, '0')}
                         </span>
                         <span style={{ color: '#888', fontSize: '12px' }}>
                           {entry.date}
@@ -502,7 +426,7 @@ export default function DebugRunner() {
                   ))
                 ) : (
                   <p style={{ color: '#00ffff', textAlign: 'center' as const }}>
-                    No scores yet! Be the first to run.
+                    No scores yet! Be the first to play.
                   </p>
                 )}
               </div>
@@ -537,7 +461,7 @@ export default function DebugRunner() {
                 cursor: 'pointer'
               }}
             >
-              🏃‍♂️ RUN AGAIN
+              🏃‍♂️ PLAY AGAIN
             </button>
             {!showLeaderboard && leaderboard.length > 0 && (
               <button
@@ -592,21 +516,25 @@ export default function DebugRunner() {
             </div>
             <div style={{
               background: 'rgba(0, 0, 0, 0.8)',
+              border: '2px solid #00ff00',
+              padding: '10px 20px',
+              borderRadius: '8px'
+            }}>
+              <span style={{ color: '#00ffff', fontWeight: 'bold' }}>HEALTH: </span>
+              <span style={{ fontSize: '20px', color: '#ff4444' }}>
+                {'❤️'.repeat(health)}{'🖤'.repeat(3 - health)}
+              </span>
+            </div>
+            <div style={{
+              background: 'rgba(0, 0, 0, 0.8)',
               border: '2px solid #ffa500',
               padding: '10px 20px',
               borderRadius: '8px'
             }}>
-              <span style={{ color: '#00ffff', fontWeight: 'bold' }}>DISTANCE: </span>
-              <span style={{ fontSize: '20px', color: '#00ff00' }}>{Math.floor(distance / 10)}m</span>
-            </div>
-            <div style={{
-              background: 'rgba(0, 0, 0, 0.8)',
-              border: '2px solid #ff4444',
-              padding: '10px 20px',
-              borderRadius: '8px'
-            }}>
-              <span style={{ color: '#00ffff', fontWeight: 'bold' }}>SPEED: </span>
-              <span style={{ fontSize: '20px', color: '#ff4444' }}>{speed.toFixed(1)}x</span>
+              <span style={{ color: '#00ffff', fontWeight: 'bold' }}>TIME: </span>
+              <span style={{ fontSize: '20px', color: '#00ff00' }}>
+                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+              </span>
             </div>
           </div>
 
@@ -614,98 +542,92 @@ export default function DebugRunner() {
           <div style={{
             maxWidth: '800px',
             margin: '0 auto',
-            ...gameAreaStyle
+            height: '500px',
+            background: 'linear-gradient(180deg, #000428 0%, #004e92 100%)',
+            border: '3px solid #00ff41',
+            position: 'relative' as const,
+            overflow: 'hidden',
+            fontFamily: 'Monaco, Consolas, monospace'
           }}>
-            {/* Player Character */}
-            <div style={playerStyle}>
-              {isDucking ? '🏃‍♂️' : isJumping ? '🦘' : '🏃‍♂️'}
-            </div>
+            {/* Lane markers */}
+            {LANES.map((lane, index) => (
+              <div
+                key={index}
+                style={{
+                  position: 'absolute',
+                  left: `${lane}%`,
+                  top: 0,
+                  bottom: 0,
+                  width: '2px',
+                  background: 'rgba(0, 255, 65, 0.3)',
+                  transform: 'translateX(-50%)'
+                }}
+              />
+            ))}
 
-            {/* Obstacles */}
-            {obstacles.map(obs => {
-              const colors = {
-                error: '#ff4444',
-                warning: '#ffaa00', 
-                info: '#4488ff'
-              };
-              return (
-                <div
-                  key={obs.id}
-                  style={{
-                    position: 'absolute',
-                    left: `${obs.x}%`,
-                    top: `${obs.y}%`,
-                    width: `${obs.width}px`,
-                    height: `${obs.height}px`,
-                    background: colors[obs.type],
-                    border: '3px solid #fff',
-                    borderRadius: '6px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '14px',
-                    fontWeight: 'bold',
-                    color: '#fff',
-                    textAlign: 'center' as const,
-                    boxShadow: `0 0 15px ${colors[obs.type]}`,
-                    padding: '8px'
-                  }}
-                >
-                  <div style={{ fontSize: '18px', marginBottom: '4px' }}>
-                    {obs.type === 'error' ? '🔥' : obs.type === 'warning' ? '⚠️' : 'ℹ️'}
-                  </div>
-                  <div style={{ fontSize: '12px', lineHeight: '1.2' }}>
-                    {obs.errorType}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Power-ups */}
-            {powerUps.map(power => {
-              const colors = {
-                performance: '#00ff00',
-                monitoring: '#00ffff',
-                debugging: '#ff00ff'
-              };
-              return (
-                <div
-                  key={power.id}
-                  style={{
-                    position: 'absolute',
-                    left: `${power.x}%`,
-                    top: `${power.y}%`,
-                    width: '30px',
-                    height: '30px',
-                    background: colors[power.type],
-                    border: '2px solid #fff',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                    color: '#000',
-                    boxShadow: `0 0 15px ${colors[power.type]}`,
-                    animation: 'pulse 1s infinite'
-                  }}
-                >
-                  {power.type === 'performance' ? '⚡' : power.type === 'monitoring' ? '👁️' : '🔧'}
-                </div>
-              );
-            })}
-
-            {/* Ground line */}
+            {/* Player */}
             <div style={{
               position: 'absolute',
-              bottom: '35%',
-              left: 0,
-              right: 0,
-              height: '2px',
-              background: '#00ffff',
-              boxShadow: '0 0 5px #00ffff'
-            }} />
+              left: `${LANES[playerLane]}%`,
+              bottom: '50px',
+              transform: 'translateX(-50%)',
+              fontSize: '40px',
+              zIndex: 100,
+              transition: 'left 0.2s ease-out'
+            }}>
+              🏃‍♂️
+            </div>
+
+            {/* Game Items */}
+            {gameItems.map(item => (
+              <div
+                key={item.id}
+                onClick={() => handleItemClick(item)}
+                style={{
+                  position: 'absolute',
+                  left: `${item.x}%`,
+                  top: `${item.y}%`,
+                  transform: 'translateX(-50%)',
+                  width: '120px',
+                  minHeight: '60px',
+                  background: item.type === 'good' ? '#22c55e' : '#ef4444',
+                  border: '3px solid #fff',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  color: '#fff',
+                  textAlign: 'center' as const,
+                  cursor: 'pointer',
+                  padding: '8px',
+                  boxShadow: `0 0 15px ${item.type === 'good' ? '#22c55e' : '#ef4444'}`,
+                  transition: 'transform 0.1s ease-out'
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLElement).style.transform = 'translateX(-50%) scale(1.1)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLElement).style.transform = 'translateX(-50%) scale(1)';
+                }}
+              >
+                <div style={{ fontSize: '16px', marginBottom: '4px' }}>
+                  {item.type === 'good' ? '✅' : '❌'}
+                </div>
+                <div style={{ fontSize: '11px', lineHeight: '1.2' }}>
+                  {item.name}
+                </div>
+                <div style={{ 
+                  fontSize: '10px', 
+                  marginTop: '4px',
+                  color: item.type === 'good' ? '#90EE90' : '#FFB6C1'
+                }}>
+                  {item.points > 0 ? '+' : ''}{item.points}pts
+                </div>
+              </div>
+            ))}
 
             {/* Controls instruction */}
             <div style={{
@@ -714,11 +636,11 @@ export default function DebugRunner() {
               right: '10px',
               background: 'rgba(0, 0, 0, 0.8)',
               padding: '8px 12px',
-              border: '1px solid #00ffff',
+              border: '1px solid #00ff41',
               borderRadius: '4px',
               fontSize: '12px'
             }}>
-              ↑ JUMP | ↓ DUCK
+              ← → MOVE | CLICK TO COLLECT
             </div>
 
             {/* Speed indicator */}
@@ -736,14 +658,6 @@ export default function DebugRunner() {
               SPEED: {speed.toFixed(1)}x
             </div>
           </div>
-
-          <style jsx>{`
-            @keyframes pulse {
-              0% { transform: scale(1); }
-              50% { transform: scale(1.1); }
-              100% { transform: scale(1); }
-            }
-          `}</style>
         </>
       )}
     </div>
