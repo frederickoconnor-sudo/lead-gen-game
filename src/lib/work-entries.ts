@@ -19,6 +19,8 @@ export type WorkEntry = {
   link?: string;
   preview?: string;
   thumbnail?: string;
+  thumbnailAlt?: string;
+  thumbnailPosition?: string;
   images?: { src: string; alt: string; caption?: string }[];
   featured?: boolean;
   caseStudy?: { sections: CaseStudySection[] };
@@ -63,6 +65,7 @@ export const workEntries: WorkEntry[] = [
     result: "Validated by listening to Gong recordings of sales calls. Prospects, in their own words, confirmed they experienced the problems the messaging described.",
     file: "/work/bugsnag-messaging-doc.pdf",
     preview: "/work/previews/bugsnag-messaging-doc.pdf.png",
+    thumbnail: "/work/previews/bugsnag-messaging-doc.pdf.png",
   },
   {
     slug: "hunters-anvilogic-battlecard",
@@ -241,6 +244,8 @@ export const workEntries: WorkEntry[] = [
     result: "Used in sales enablement sessions as a guide for sellers sharing their win stories with the team. When a seller asked in Slack for details on a specific deal, another seller pointed them to a win flash that had been written. Someone from product said it gave real insight into which features actually mattered to customers.",
     file: "/work/hunters-win-flash-template.docx",
     preview: "/work/previews/hunters-win-flash-template.docx.png",
+    thumbnail: "/work/previews/hunters-win-flash-template.docx.png",
+    thumbnailPosition: "object-top",
   },
   {
     slug: "pennymac-customer-story",
@@ -286,6 +291,9 @@ export const workEntries: WorkEntry[] = [
     why: "Supplier mastering was a key vertical for Tamr's new SaaS solution, and this story showed the business value of that product.",
     result: "Used by sales in conversations with prospects considering Tamr for supplier mastering.",
     link: "https://www.tamr.com/bicycle-manufacturer-customer-story",
+    thumbnail: "/work/tamr-accell-bicycle-hero.jpg",
+    thumbnailAlt: "Low-poly illustration of a warehouse distribution center with forklift and workers",
+    thumbnailPosition: "object-center",
   },
   {
     slug: "tamr-financial-services-case-study",
@@ -297,6 +305,9 @@ export const workEntries: WorkEntry[] = [
     why: "Tamr needed stories from customers using its platform for cleaning up customer data, a major Tamr use case.",
     result: "Used by sales in conversations with financial services firms considering Tamr.",
     link: "https://www.tamr.com/know-your-customers-drive-your-growth",
+    thumbnail: "/work/tamr-western-union-hero.jpg",
+    thumbnailAlt: "Low-poly illustration of businesspeople shaking hands in front of a bank building with a growth arrow",
+    thumbnailPosition: "object-center",
   },
   {
     slug: "tamr-google-cloud-bigquery",
@@ -308,6 +319,8 @@ export const workEntries: WorkEntry[] = [
     why: "Tamr's Google Cloud partnership needed a credible, technical story that put Tamr in front of Google's own developer and data audience.",
     result: "Published on Google Cloud's blog under the CPO's byline. Used by a Google seller to introduce Tamr to a retailer, who eventually bought Tamr and ran it on Google Cloud.",
     link: "https://cloud.google.com/blog/products/data-analytics/how-tamr-delivers-master-data-management-at-scale-with-bigquery",
+    thumbnail: "/work/google-cloud-bigquery-article.jpg",
+    thumbnailAlt: "Infographic comparing traditional rules-only MDM to Tamr's human-guided machine learning approach with BigQuery",
     featured: true,
   },
   {
@@ -332,6 +345,9 @@ export const workEntries: WorkEntry[] = [
     why: "Technical credibility on this topic mattered more coming from someone customer-facing and technical.",
     result: "Published on SmartBear's blog under the sales engineer's byline, used in conversations with prospects.",
     link: "https://smartbear.com/blog/modern-apps-broke-observability-heres-how-we-fix-it/",
+    thumbnail: "/work/smartbear-observability-blog.jpg",
+    thumbnailAlt: "Developer working at a multi-monitor setup showing code and analytics dashboards",
+    thumbnailPosition: "object-center",
   },
   {
     slug: "hunters-next-gen-siem-blog",
