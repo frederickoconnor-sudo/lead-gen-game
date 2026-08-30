@@ -67,7 +67,6 @@ export default function ResumePage() {
           <div className="flex items-center gap-6 text-sm text-gray-500">
             <Link href="/work" className="hover:text-gray-900 transition-colors">Work</Link>
             <Link href="/resume" className="text-gray-900 font-medium">Resume</Link>
-            <Link href="/games" className="hover:text-gray-900 transition-colors">Interactive</Link>
           </div>
         </div>
       </nav>

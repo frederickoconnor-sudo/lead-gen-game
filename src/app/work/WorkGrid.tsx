@@ -103,7 +103,7 @@ export default function WorkGrid() {
         if (!entries.length) return null;
 
         return (
-          <section key={category}>
+          <section key={category} id={category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "")}>
             <div className="mb-7">
               <h2 className="font-[family-name:var(--font-syne)] text-[11px] font-bold uppercase tracking-[0.28em] text-stone-400 mb-3">
                 {category}
