@@ -69,7 +69,7 @@ function WorkCard({ entry }: { entry: WorkEntry }) {
     (entry.thumbnail?.includes("/previews/") ? "object-center" : "object-top");
 
   return (
-    <Link href={`/work/${entry.slug}`} className="group block">
+    <Link href={`/work/${entry.slug}`} className="group block min-w-0">
       <div className="relative overflow-hidden rounded-md bg-stone-800 mb-3 h-48">
         {entry.thumbnail ? (
           <Image
