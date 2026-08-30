@@ -76,7 +76,6 @@ export default function ResumePage() {
         <div className="mb-8">
           <h1 className="text-4xl font-semibold text-gray-900 mb-2">Fred O&apos;Connor</h1>
           <p className="text-sm text-gray-500 mb-5">
-            339-226-0480&nbsp;&nbsp;·&nbsp;&nbsp;
             <a href="mailto:frederickoconnor@gmail.com" className="hover:text-gray-900 transition-colors">
               frederickoconnor@gmail.com
             </a>
