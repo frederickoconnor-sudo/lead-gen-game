@@ -122,6 +122,43 @@ export const workEntries: WorkEntry[] = [
     },
   },
   {
+    slug: "tamr-saas-launch",
+    shortTitle: "Tamr SaaS Launch",
+    title: "Launching Tamr's SaaS Offering Without Confusing the Core Product Story",
+    hook: "Launched Tamr's SaaS offering with a clear platform story, generating roughly $600K in pipeline in six months and two closed deals.",
+    category: "GTM & Launches",
+    company: "Tamr",
+    what: "Led the product marketing for Tamr's SaaS launch — developing the messaging, positioning, and sales enablement to take the new offering to market without undermining Tamr's existing on-premise product story.",
+    why: "Tamr was adding a SaaS delivery option to its existing on-premise platform. Without a clear platform narrative, customers and prospects would treat them as two separate competing products rather than one platform with two deployment options.",
+    result: "Generated roughly $600K in pipeline in six months and closed two deals.",
+    caseStudy: {
+      sections: [
+        {
+          heading: "The challenge",
+          body: "Tamr was launching a SaaS offering alongside its existing on-premise product. The risk wasn't just a product launch — it was a messaging problem.\n\nWithout a clear narrative, customers who had bought the on-premise version could feel like they'd chosen the wrong path. And prospects evaluating Tamr might treat Core and Cloud as competing products, making Tamr look fragmented instead of flexible.",
+        },
+        {
+          heading: "Identifying the Core vs. Cloud messaging problem",
+          body: "I talked with Sales and Customer Success to understand how they were already describing the two products in customer conversations. The pattern was clear: they were being described as two separate things rather than two ways to access the same platform.\n\nThat framing was creating confusion. Existing customers didn't know what the SaaS launch meant for their investment, and prospects didn't have a simple way to choose between options.",
+        },
+        {
+          heading: "Reframing as one platform",
+          body: "I reframed the story around Tamr as a single platform with two deployment options — giving customers the flexibility to choose based on their infrastructure, compliance requirements, and existing workflows.\n\nThis meant the SaaS launch could be positioned as expanding access to Tamr, not replacing the on-premise product or fragmenting the offering.",
+        },
+        {
+          heading: "Sales enablement",
+          body: "I worked with the Sales team to build enablement around the new platform narrative — how to handle questions from existing on-premise customers, how to position SaaS with new prospects, and how to qualify which deployment option was the right fit for a given account.",
+        },
+        {
+          heading: "The result",
+          metric: { value: "~$600K", label: "Pipeline in 6 months" },
+          secondaryMetric: { value: "2 closed deals", label: "In the first six months" },
+          body: "The SaaS launch generated roughly $600K in pipeline in six months, with two closed deals. Equally important, the platform framing gave Sales a clear way to talk about both products without undermining the existing customer base.",
+        },
+      ],
+    },
+  },
+  {
     slug: "hunters-mssp-launch",
     shortTitle: "Hunters MSSP Launch",
     title: "Launching Hunters for Managed Security Service Providers",
@@ -158,6 +195,86 @@ export const workEntries: WorkEntry[] = [
           metric: { value: "3 MSSPs in 6 months", label: "Against a goal of 4" },
           secondaryMetric: { value: "~30 MSSPs", label: "Eventually using Hunters" },
           body: "We came just short of the initial goal, but the results gave leadership enough confidence in the opportunity to continue investing in the MSSP program.",
+        },
+      ],
+    },
+  },
+  {
+    slug: "hunters-ai-assistant-adoption",
+    shortTitle: "Hunters AI Assistant Adoption",
+    title: "Turning Around Adoption of Hunters' AI Assistant",
+    hook: "How customer research and a messaging reset helped turn around adoption of Hunters' AI assistant from 17% to 50%.",
+    category: "GTM & Launches",
+    company: "Hunters",
+    what: "Led the product marketing effort to understand and address low adoption of Hunters' AI assistant — including customer research, a messaging reset, Sales and CS enablement, and a customer webinar.",
+    why: "Hunters had launched an AI assistant to help security analysts move faster. Four months in, adoption was stuck at 17% against a six-month goal of 50%.",
+    result: "Reached 50% adoption at month eight — two months past the original goal, but a significant turnaround from where the product stood at month four.",
+    caseStudy: {
+      sections: [
+        {
+          heading: "The goal",
+          body: "Hunters launched an AI assistant to help security analysts investigate alerts faster. The goal was 50% adoption among active customers within six months.",
+        },
+        {
+          heading: "The problem",
+          body: "At month four, adoption was at 17%.\n\nThat was the wrong direction. If the trend continued, we weren't going to hit the goal — and there was a real risk the feature would get written off as a failed launch.",
+        },
+        {
+          heading: "Understanding why",
+          body: "I ran interviews with two groups: customers who had adopted the AI assistant, and customers who hadn't.\n\nThe pattern that emerged was consistent. Adopters described the feature in practical terms — it saved them time on investigations and helped them work through a backlog of alerts. Non-adopters described it in terms of the AI itself: what model was behind it, whether the outputs could be trusted, whether it was actually doing anything useful.\n\nThe messaging we'd launched with had focused heavily on the AI capabilities. That was the wrong frame for the audience. Security analysts don't want to think about AI — they want to know if a tool will help them close investigations faster.",
+        },
+        {
+          heading: "The messaging reset",
+          body: "I reset the messaging to lead with the problems security analysts actually faced: too many alerts, not enough time, investigations that dragged on longer than they should.\n\nThe AI assistant became a way to solve those problems — not a product to evaluate on its own technical merits.\n\nI also worked with CS on how to introduce the feature to customers who hadn't adopted it yet, and updated the Sales team on how to talk about it with prospects.",
+        },
+        {
+          heading: "Customer webinar",
+          body: "I ran a customer webinar with an analyst who had adopted the feature and could speak to it in real terms — how they were using it in practice, what it changed about their day-to-day workflow, and what they'd tell a skeptical colleague.",
+        },
+        {
+          heading: "The result",
+          metric: { value: "17% → 50%", label: "AI assistant adoption" },
+          body: "Adoption reached 50% at month eight — two months past the original six-month goal. The six-month target was missed, but the team went from a trajectory heading toward a failed launch to one that ultimately delivered the result the business needed.",
+        },
+      ],
+    },
+  },
+  {
+    slug: "tamr-partner-gtm",
+    shortTitle: "Tamr Partner GTM",
+    title: "Building Tamr's Partner GTM Motion from Scratch",
+    hook: "Built Tamr's partner GTM motion with AWS, Google Cloud, and Snowflake, helping partner-influenced deals reach 50% of ARR in year one and 60% in year two.",
+    category: "GTM & Launches",
+    company: "Tamr",
+    what: "Built Tamr's partner go-to-market function from scratch — including partner positioning, better-together messaging for AWS, Google Cloud, and Snowflake, sales enablement, and demand gen activation.",
+    why: "Tamr had strategic partnerships in place with major cloud providers but no partner marketing foundation — no messaging, no joint value propositions, and no enablement for how Sales should talk about partners in deals.",
+    result: "Partner-influenced ARR reached 50% in year one and 60% in year two.",
+    caseStudy: {
+      sections: [
+        {
+          heading: "Starting from scratch",
+          body: "Tamr had signed partnerships with AWS, Google Cloud, and Snowflake, but there was no partner marketing foundation to support them. No messaging, no joint positioning, no enablement for how Sales should use the partnerships in customer conversations.\n\nI was brought in to build that foundation.",
+        },
+        {
+          heading: "Understanding the products and customers",
+          body: "I started with product research to understand how Tamr worked with each partner's stack — what the technical integration looked like, where the workflow connections were, and how each combination was already being used by customers.\n\nI also ran customer research to hear directly from companies running Tamr alongside AWS, Google Cloud, or Snowflake. I wanted to understand why they'd chosen to use them together and what value they were seeing from the combination.",
+        },
+        {
+          heading: "Better-together positioning",
+          body: "The research gave me the foundation for better-together positioning and messaging for each partner.\n\nRather than describing the integrations in technical terms, the messaging was built around the business problems customers were solving when they used Tamr alongside each platform — and why the combination delivered something that neither product could do on its own.",
+        },
+        {
+          heading: "Sales enablement",
+          body: "I built enablement for the Sales team on how to use the partner relationships in deals: how to identify when a partner was already in the account, how to use the partner story to support the Tamr value proposition, and how to work with partner sellers on joint opportunities.",
+        },
+        {
+          heading: "Demand gen activation",
+          body: "I worked with Demand Gen to activate the partner relationships in market — co-branded content, joint events, and programs through each partner's marketplace and GTM channels.",
+        },
+        {
+          heading: "The result",
+          metric: { value: "50% → 60%", label: "Partner-influenced ARR, year one to year two" },
+          body: "Partner-influenced ARR reached 50% in year one and grew to 60% in year two. Partner-influenced means deals where a partner relationship played a meaningful role in the sale — not deals directly sourced by partners.",
         },
       ],
     },
@@ -416,14 +533,14 @@ export const workEntries: WorkEntry[] = [
   },
   {
     slug: "bugsnag-arcade-games",
-    title: "BugSnag Arcade Games",
-    hook: "Retro arcade games built to reach technical audiences through interactive content.",
+    title: "BugSnag Arcade Game",
+    hook: "Retro arcade game built to reach technical audiences through interactive content.",
     category: "Interactive",
     company: "BugSnag / SmartBear",
-    what: "Retro-style arcade games built with Claude Code, using real BugSnag error types pulled from documentation.",
+    what: "A retro-style arcade game built with Claude Code, using real BugSnag error types pulled from documentation.",
     why: "To reach technical audiences through interactive content instead of traditional marketing.",
-    result: "Live and playable at fredjo.xyz/interactive.",
-    link: "/games",
+    result: "Live and playable at fredjo.xyz/games/shooter.",
+    link: "https://fredjo.xyz/games/shooter",
   },
 ];
 
