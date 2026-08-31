@@ -37,6 +37,27 @@ function getViewerSrc(file: string): string {
   return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fullUrl)}`;
 }
 
+function Paragraphs({ text }: { text: string }) {
+  return (
+    <div className="space-y-3">
+      {text.split("\n\n").map((para, i) => (
+        <p key={i} className="text-base text-stone-700 leading-relaxed">{para}</p>
+      ))}
+    </div>
+  );
+}
+
+function MyRole({ role }: { role: string }) {
+  return (
+    <div className="mb-8">
+      <span className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mr-2">
+        My role
+      </span>
+      <span className="text-sm text-stone-500">{role}</span>
+    </div>
+  );
+}
+
 function OpenDocLink({ href, label = "Open full document ↗" }: { href: string; label?: string }) {
   return (
     <a
@@ -108,28 +129,49 @@ export default async function WorkEntryPage({ params }: Props) {
             <h1 className="font-[family-name:var(--font-syne)] text-4xl font-bold text-stone-900 leading-tight mb-4">
               {entry.title}
             </h1>
-            <p className="text-xl text-stone-500 leading-relaxed mb-12 max-w-2xl">
+            <p className={`text-xl text-stone-500 leading-relaxed max-w-2xl ${entry.myRole ? "mb-6" : "mb-12"}`}>
               {entry.hook}
             </p>
+            {entry.myRole && <MyRole role={entry.myRole} />}
             <div className="space-y-8">
               <div>
                 <p className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
                   What it is
                 </p>
-                <p className="text-base text-stone-700 leading-relaxed">{entry.what}</p>
+                <Paragraphs text={entry.what} />
               </div>
               <div className="border-t border-stone-200 pt-8">
                 <p className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
-                  Why it was created
+                  {entry.whyLabel ?? "Why it was created"}
                 </p>
-                <p className="text-base text-stone-700 leading-relaxed">{entry.why}</p>
+                <Paragraphs text={entry.why} />
+                {entry.relatedWork && (
+                  <p className="mt-4">
+                    <Link
+                      href={`/work/${entry.relatedWork.slug}`}
+                      className="text-sm text-violet-600 hover:text-violet-800 transition-colors"
+                    >
+                      {entry.relatedWork.label}
+                    </Link>
+                  </p>
+                )}
               </div>
-              <div className="border-t border-stone-200 pt-8">
-                <p className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
-                  Result
-                </p>
-                <p className="text-base text-stone-700 leading-relaxed">{entry.result}</p>
-              </div>
+              {entry.additionalSections?.map((section) => (
+                <div key={section.heading} className="border-t border-stone-200 pt-8">
+                  <p className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
+                    {section.heading}
+                  </p>
+                  <Paragraphs text={section.body} />
+                </div>
+              ))}
+              {entry.result && (
+                <div className="border-t border-stone-200 pt-8">
+                  <p className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
+                    Result
+                  </p>
+                  <p className="text-base text-stone-700 leading-relaxed">{entry.result}</p>
+                </div>
+              )}
             </div>
           </div>
 

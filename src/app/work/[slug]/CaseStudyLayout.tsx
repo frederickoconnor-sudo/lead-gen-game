@@ -40,9 +40,19 @@ export default function CaseStudyLayout({ entry }: { entry: WorkEntry }) {
       </h1>
 
       {/* Hook */}
-      <p className="text-xl text-stone-500 leading-relaxed mb-14 max-w-2xl">
+      <p className={`text-xl text-stone-500 leading-relaxed max-w-2xl ${entry.myRole ? "mb-6" : "mb-14"}`}>
         {entry.hook}
       </p>
+
+      {/* My role — if set */}
+      {entry.myRole && (
+        <div className="mb-10">
+          <span className="font-[family-name:var(--font-syne)] text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mr-2">
+            My role
+          </span>
+          <span className="text-sm text-stone-500">{entry.myRole}</span>
+        </div>
+      )}
 
       {/* Sections */}
       <div>

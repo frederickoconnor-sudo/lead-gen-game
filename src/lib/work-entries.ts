@@ -14,7 +14,13 @@ export type WorkEntry = {
   company: string;
   what: string;
   why: string;
-  result: string;
+  whyLabel?: string;
+  result?: string;
+  myRole?: string;
+  additionalSections?: { heading: string; body: string }[];
+  relatedWork?: { slug: string; label: string };
+  cardMetric?: { value: string; label: string };
+  displayOrder?: number;
   file?: string;
   link?: string;
   preview?: string;
@@ -47,7 +53,9 @@ export const workEntries: WorkEntry[] = [
     category: "Positioning & Messaging",
     company: "Hunters",
     what: "A product datasheet positioning Hunters as a SIEM built for small security teams with enterprise-grade security needs but without enterprise-grade security budgets.",
-    why: "Hunters redefined its ICP and positioning, and the solution brief needed to reflect this change and convey the value of Hunters to smaller security teams.",
+    why: "Built from the broader ICP and positioning work that repositioned Hunters around lean security teams with enterprise-grade needs. The solution brief needed to reflect that change and speak directly to the new ICP.",
+    myRole: "Positioning · Copywriting",
+    relatedWork: { slug: "hunters-icp-positioning", label: "See the positioning strategy →" },
     result: "Sales liked that it spoke directly to Hunters' new ICP instead of a broad audience, and started sharing it with prospects.",
     file: "/work/hunters-soc-datasheet.pdf",
     preview: "/work/previews/hunters-soc-datasheet.pdf.png",
@@ -62,6 +70,14 @@ export const workEntries: WorkEntry[] = [
     company: "BugSnag / SmartBear",
     what: "A messaging framework for BugSnag covering the problem statement, value proposition, three value drivers, differentiators, and customer proof points.",
     why: "Sales, customer success, and demand generation needed a single source of truth on how to talk about BugSnag and convey how it helped developers fix bugs in mobile apps before customer experience and revenue were impacted.",
+    myRole: "Messaging strategy · Customer research · Cross-functional validation",
+    relatedWork: { slug: "bugsnag-homepage-copy", label: "See the homepage execution →" },
+    additionalSections: [
+      {
+        heading: "How I built the messaging",
+        body: "I started with the people closest to customers — Sales, Sales Engineering, and Customer Success — to understand the problems customers were trying to solve around mobile app observability.\n\nI also talked directly with customers and listened to sales calls to understand why they bought BugSnag, the business outcomes they were seeing, and the language they used to describe those problems.\n\nI used those insights and customer language to build the messaging framework, then ran it back through Sales, Sales Engineering, Customer Success, and Product. I wanted to make sure the messaging reflected how BugSnag was actually being talked about in the field and that the technical details were accurate.",
+      },
+    ],
     result: "Validated by listening to Gong recordings of sales calls. Prospects, in their own words, confirmed they experienced the problems the messaging described.",
     file: "/work/bugsnag-messaging-doc.pdf",
     preview: "/work/previews/bugsnag-messaging-doc.pdf.png",
@@ -75,6 +91,13 @@ export const workEntries: WorkEntry[] = [
     company: "Hunters",
     what: "A competitive battlecard covering Anvilogic's weaknesses, Hunters' advantages, discovery questions, and a real sales anecdote.",
     why: "Hunters sales reps kept running into Anvilogic in deals, and needed a way to reframe those conversations.",
+    myRole: "Competitive research · Positioning · Sales enablement",
+    additionalSections: [
+      {
+        heading: "Building the competitive point of view",
+        body: "I talked with Sales, Sales Engineering, Product, and customers who had evaluated both Hunters and Anvilogic to understand where we won and lost.\n\nI also followed Anvilogic's website, LinkedIn posts, and blog to understand how they positioned themselves and where the product was headed.\n\nOne important difference was Anvilogic's reliance on Splunk. That gave Sales a useful discovery path with prospects that were considering moving away from Splunk. In one competitive deal, the prospect had talked with Anvilogic but wanted to move off Splunk, which made Anvilogic a poor fit for where they wanted their security stack to go.",
+      },
+    ],
     result: "Gave sellers a repeatable way to qualify or disqualify a deal early, using real discovery questions instead of guessing at fit.",
     file: "/work/hunters-vs-anvilogic-battlecard.pptx",
     preview: "/work/previews/hunters-vs-anvilogic-battlecard.pptx.png",
@@ -83,6 +106,7 @@ export const workEntries: WorkEntry[] = [
   },
   {
     slug: "hunters-icp-positioning",
+    displayOrder: 0,
     shortTitle: "Hunters ICP & Positioning",
     title: "Repositioning Hunters Around the Customers Who Saw the Most Value",
     hook: "How customer and deal research led to a tighter ICP, new positioning, and a sales cycle that moved from nine months to six.",
@@ -148,6 +172,14 @@ export const workEntries: WorkEntry[] = [
         {
           heading: "Reframing the launch story",
           body: "The Product Manager and I worked together to change the internal message.\n\nInstead of positioning the two offerings against each other, we framed Tamr as a single platform with two deployment options.\n\nBoth were valid choices depending on a customer's business and technical needs.\n\nThat clearer platform story became the foundation for Sales enablement around the launch.\n\nWhen the formal enablement happened, sellers understood the distinction between Core and Cloud and when to position each one.",
+        },
+        {
+          heading: "Preparing Sales",
+          body: "I led Sales enablement around the new platform story: Tamr was one platform with two deployment options.\n\nThe goal wasn't to push every customer toward Cloud. Sellers needed to understand how to position both options and work with customers to determine which deployment was right for their needs.",
+        },
+        {
+          heading: "Taking Tamr Cloud to market",
+          body: "I worked with Demand Gen on the launch campaign, including content about using Tamr to clean BigQuery data, outreach to existing customers with expansion potential for Tamr Cloud, and follow-up with prospects who had been interested in Tamr but wanted a SaaS offering.\n\nWe launched Tamr Cloud at Google Cloud Next, since the product was built on Google Cloud. I planned the booth talk track so the team could clearly explain the new offering and how it fit within the broader Tamr platform.",
         },
         {
           heading: "The result",
@@ -241,6 +273,7 @@ export const workEntries: WorkEntry[] = [
     what: "Built Tamr's partner go-to-market motion from scratch — better-together positioning for AWS, Google Cloud, and Snowflake, Sales enablement, and Demand Gen activation.",
     why: "Tamr had major technology partnerships in place but no partner marketing foundation behind them — no positioning, no messaging, no GTM motion, and a clear business goal to make half of ARR partner-influenced.",
     result: "Partner-influenced ARR reached 50% in year one and 60% in year two.",
+    cardMetric: { value: "50% → 60%", label: "Partner-Influenced ARR" },
     caseStudy: {
       sections: [
         {
@@ -271,8 +304,9 @@ export const workEntries: WorkEntry[] = [
     category: "Positioning & Messaging",
     company: "BugSnag / SmartBear",
     what: "The homepage copy for BugSnag's website, captured as a screenshot in August 2026 since the live page changes over time.",
-    why: "Prior homepage copy didn't clearly convey what BugSnag did, who should use it, and the business value it provided.",
-    result: "5% increase in homepage traffic in the month after the homepage was updated.",
+    why: "The previous homepage led with 'Your application's favorite application.' It was memorable, but it didn't clearly tell someone new to BugSnag what the product did or whether it was relevant to them.\n\nThe messaging also leaned heavily on technical capabilities without connecting them to the larger business outcomes — providing a better customer experience and protecting revenue.\n\nI rewrote the homepage around clarity. When someone landed on the page, I wanted them to quickly understand what BugSnag did, who it was for, and why it mattered to the business.",
+    whyLabel: "Clarifying the product story",
+    myRole: "Messaging strategy · Copywriting",
     thumbnail: "/work/bugsnag-homepage.png",
     images: [
       {
@@ -290,8 +324,9 @@ export const workEntries: WorkEntry[] = [
     category: "Positioning & Messaging",
     company: "BugSnag / SmartBear",
     what: "A vertical landing page for retail and e-commerce companies, focused on how app bugs cost conversion and revenue — with messaging built around high-stakes moments like Black Friday.",
-    why: "BugSnag had no messaging that spoke to retailers specifically. Built a page around the direct connection between app stability and lost sales, speaking to e-commerce teams rather than a broad developer audience.",
-    result: "Part of the LinkedIn campaigns for each vertical that generated 948K impressions and outperformed previous ads using broad, general messaging.",
+    why: "Part of a vertical messaging effort to translate BugSnag's core product story into industry-specific business problems. BugSnag had no messaging that spoke to retailers specifically, so this page connected app stability directly to conversion and revenue — speaking to e-commerce teams, not a broad developer audience.",
+    myRole: "Vertical messaging · Copywriting",
+    result: "Across the vertical campaigns: 948K LinkedIn impressions, outperforming previous campaigns using broader messaging.",
     thumbnail: "/work/bugsnag-retail-vertical.png",
     thumbnailPosition: "object-top",
     images: [
@@ -310,8 +345,9 @@ export const workEntries: WorkEntry[] = [
     category: "Positioning & Messaging",
     company: "BugSnag / SmartBear",
     what: "A vertical landing page for hotels, restaurants, and hospitality brands, focused on how app bugs break the end-to-end digital guest experience across reservations, check-in, and in-venue ordering.",
-    why: "Hospitality apps handle high-stakes customer moments. BugSnag needed messaging that spoke to those specific use cases — not generic developer tooling — to reach the teams responsible for guest experience.",
-    result: "Part of the LinkedIn campaigns for each vertical that generated 948K impressions and outperformed previous ads using broad, general messaging.",
+    why: "Part of a vertical messaging effort to translate BugSnag's core product story into industry-specific business problems. Hospitality apps handle high-stakes customer moments across booking, check-in, and in-venue ordering. BugSnag needed messaging that spoke to those specific use cases — not generic developer tooling — to reach the teams responsible for guest experience.",
+    myRole: "Vertical messaging · Copywriting",
+    result: "Across the vertical campaigns: 948K LinkedIn impressions, outperforming previous campaigns using broader messaging.",
     thumbnail: "/work/bugsnag-hospitality-vertical.png",
     thumbnailPosition: "object-top",
     images: [
@@ -330,8 +366,9 @@ export const workEntries: WorkEntry[] = [
     category: "Positioning & Messaging",
     company: "BugSnag / SmartBear",
     what: "A vertical landing page for streaming and media companies, focused on how app bugs cause viewers to drop off during high-stakes moments — finale nights, live events, new releases — and switch platforms.",
-    why: "Streaming audiences are quick to leave when apps fail. BugSnag needed messaging framed around viewer retention and subscriber churn, not just error tracking, to resonate with media teams.",
-    result: "Part of the LinkedIn campaigns for each vertical that generated 948K impressions and outperformed previous ads using broad, general messaging.",
+    why: "Part of a vertical messaging effort to translate BugSnag's core product story into industry-specific business problems. Streaming audiences are quick to leave when apps fail. BugSnag needed messaging framed around viewer retention and subscriber churn, not just error tracking, to resonate with media teams.",
+    myRole: "Vertical messaging · Copywriting",
+    result: "Across the vertical campaigns: 948K LinkedIn impressions, outperforming previous campaigns using broader messaging.",
     thumbnail: "/work/bugsnag-media-vertical.png",
     thumbnailPosition: "object-top",
     images: [
@@ -344,12 +381,20 @@ export const workEntries: WorkEntry[] = [
   },
   {
     slug: "tamr-first-call-deck",
+    displayOrder: 1,
     title: "Tamr First Call Deck",
     hook: "Reframed Tamr around business outcomes, not features — and sales actually used it.",
     category: "Sales Enablement",
     company: "Tamr",
     what: "The sales deck used on first calls with prospects, framing Tamr's data mastering platform around business outcomes rather than technical features.",
     why: "Prospects were more familiar with legacy MDM tools, so the deck needed to reframe the conversation around using AI to clean up dirty data, instead of relying on manual rules.",
+    myRole: "Sales enablement · Narrative strategy · Copywriting",
+    additionalSections: [
+      {
+        heading: "Rebuilding the first-call story",
+        body: "The old first-call deck started by talking about Tamr. It didn't do enough to establish the problem Tamr solved or why a prospect should care, and it lacked a strong example of the kind of messy data customers were actually dealing with.\n\nI rebuilt the story to start with the problem of dirty data before introducing Tamr. From there, I explained why Tamr was different — particularly its use of AI — and added a real customer data example to make the problem and solution more concrete.\n\nI also reworked the product architecture slide with clearer examples of the data Tamr cleaned and how the product worked, so sellers had a more tangible way to explain the technology.",
+      },
+    ],
     result: "Sales actually used this deck in prospect calls and didn't revert back to the old one.",
     file: "/work/tamr-first-call-deck.pptx",
     preview: "/work/previews/tamr-first-call-deck.pptx.png",
@@ -357,6 +402,7 @@ export const workEntries: WorkEntry[] = [
   },
   {
     slug: "hunters-gigaom-radar-messaging",
+    displayOrder: 3,
     title: "Hunters GigaOm Radar Messaging Package",
     hook: "Turned third-party analyst recognition into a usable sales conversation tool.",
     category: "Sales Enablement",
@@ -369,12 +415,13 @@ export const workEntries: WorkEntry[] = [
   },
   {
     slug: "hunters-win-flash-template",
+    displayOrder: 2,
     title: "Hunters Win Flash Template",
     hook: "A system for capturing what actually won deals — built from scratch.",
     category: "Sales Enablement",
     company: "Hunters",
     what: "A template for capturing why and how Hunters won a sales deal: the competitive context, what resonated with the customer, and the key insights behind the close.",
-    why: "Sales wins weren't being documented, so wins had to be pieced together from Salesforce notes and POC documents after the fact. Initially ran this personally, interviewing sellers and sales engineers after each closed deal; once the team understood what to include, sellers and SEs filled it out themselves, with editing support provided.",
+    why: "Sales wins weren't being documented, so wins had to be pieced together from Salesforce notes and POC documents after the fact. Initially ran this personally, interviewing sellers and sales engineers after each closed deal; once the team understood what to include, sellers and SEs filled it out themselves, with editing support provided. What started as a manual process became a repeatable way for Sales to capture and share why Hunters won.",
     result: "Used in sales enablement sessions as a guide for sellers sharing their win stories with the team. When a seller asked in Slack for details on a specific deal, another seller pointed them to a win flash that had been written. Someone from product said it gave real insight into which features actually mattered to customers.",
     file: "/work/hunters-win-flash-template.docx",
     preview: "/work/previews/hunters-win-flash-template.docx.png",
@@ -388,7 +435,7 @@ export const workEntries: WorkEntry[] = [
     category: "Customer Stories",
     company: "Hunters",
     what: "A customer story on how PennyMac used Hunters' security data lake, built on Snowflake, to modernize its SIEM approach.",
-    why: "Hunters wanted a marquee brand to share its story and show the value the SIEM provided.",
+    why: "PennyMac was a recognizable brand name that gave Hunters credibility with other enterprise security teams evaluating the product.",
     result: "Published on Hunters' blog and shared by sales with prospects.",
     link: "https://www.hunters.security/en/blog/pennymac-security-data-lake-snowflake",
     featured: true,
@@ -400,7 +447,7 @@ export const workEntries: WorkEntry[] = [
     category: "Customer Stories",
     company: "Hunters",
     what: "A customer story, shared at Snowflake Summit, on how Kudelski Security, a managed security service provider, used Hunters' security data lake, built on Snowflake, to give its customers a modern SIEM.",
-    why: "Hunters needed MSSP customer stories to attract other MSSPs and show the value of building a program around Hunters.",
+    why: "Kudelski helped tell the story for organizations that liked Hunters but didn't have the analyst resources to run it themselves and needed a managed approach. It was a proof point for both the MSSP program and the broader positioning around lean security teams.",
     result: "Published on Hunters' blog and referenced by the MSSP sales team in conversations with other MSSPs.",
     link: "https://www.hunters.security/en/blog/kudelski-security-data-lake-snowflake-0",
   },
@@ -411,7 +458,7 @@ export const workEntries: WorkEntry[] = [
     category: "Customer Stories",
     company: "Hunters",
     what: "A customer story, shared at Snowflake Summit, on how Xactly used Hunters' security data lake, built on Snowflake, to modernize its SIEM approach.",
-    why: "Hunters needed stories from customers in its new ICP — companies with smaller security teams — and Xactly's SIEM journey fit that need perfectly.",
+    why: "After repositioning Hunters around smaller security teams with enterprise-grade needs, the story needed proof that the new ICP was real. Xactly was a customer that fit that profile — a company with a lean security team that had adopted Hunters and was seeing value.",
     result: "Published on Hunters' blog and shared by sales with prospects.",
     link: "https://www.hunters.security/en/blog/xactly-security-data-lake-snowflake-0",
   },
@@ -422,7 +469,7 @@ export const workEntries: WorkEntry[] = [
     category: "Customer Stories",
     company: "Tamr",
     what: "A customer story on how a bicycle manufacturer used Tamr's data mastering platform to get a clear picture of who their top suppliers were, to negotiate prices better.",
-    why: "Supplier mastering was a key vertical for Tamr's new SaaS solution, and this story showed the business value of that product.",
+    why: "Supplier mastering was an important Tamr use case, and the sales team needed customer proof in it. This story showed how a real manufacturer used Tamr to get a clear picture of its supplier base and negotiate better prices.",
     result: "Used by sales in conversations with prospects considering Tamr for supplier mastering.",
     link: "https://www.tamr.com/bicycle-manufacturer-customer-story",
     thumbnail: "/work/tamr-accell-bicycle-hero.jpg",
@@ -436,7 +483,7 @@ export const workEntries: WorkEntry[] = [
     category: "Customer Stories",
     company: "Tamr",
     what: "A case study on how a major financial services company used Tamr to develop trusted customer records and use that information to provide better customer service.",
-    why: "Tamr needed stories from customers using its platform for cleaning up customer data, a major Tamr use case.",
+    why: "Financial services was a strategic vertical for Tamr. This story gave the sales team proof in that market — a major financial services firm that used Tamr to build trusted customer records and deliver better service.",
     result: "Used by sales in conversations with financial services firms considering Tamr.",
     link: "https://www.tamr.com/know-your-customers-drive-your-growth",
     thumbnail: "/work/tamr-western-union-hero.jpg",
@@ -450,7 +497,15 @@ export const workEntries: WorkEntry[] = [
     category: "Thought Leadership",
     company: "Tamr",
     what: "A co-branded technical article on Google Cloud's blog, ghostwritten for Tamr's CPO, on how Tamr delivers master data management at scale using BigQuery.",
-    why: "Tamr's Google Cloud partnership needed a credible, technical story that put Tamr in front of Google's own developer and data audience.",
+    why: "Tamr's Google Cloud partnership needed a credible, technical story that put Tamr in front of Google's much larger developer and data audience. With Tamr Cloud launching at Google Cloud Next a few months later, the piece was also an opportunity to start laying the groundwork for the launch.",
+    myRole: "Content strategy · Technical writing · Partner content",
+    relatedWork: { slug: "tamr-saas-launch", label: "See the SaaS launch →" },
+    additionalSections: [
+      {
+        heading: "Using the partnership to build the narrative",
+        body: "Google approached us about co-writing a blog because of our existing partnership. With Tamr Cloud launching at Google Cloud Next a few months later, I saw it as an opportunity to start laying the groundwork for the launch.\n\nI used the piece to explain Tamr's approach to data mastering to Google's much larger audience and begin establishing the story we wanted in the market ahead of the launch.\n\nTo write it, I interviewed Sales Engineers and Product to make sure I understood the technical story, then pulled together ideas Tamr had already developed across several pieces of content and adapted them into a cohesive narrative for Google's audience.",
+      },
+    ],
     result: "Published on Google Cloud's blog under the CPO's byline. Used by a Google seller to introduce Tamr to a retailer, who eventually bought Tamr and ran it on Google Cloud.",
     link: "https://cloud.google.com/blog/products/data-analytics/how-tamr-delivers-master-data-management-at-scale-with-bigquery",
     thumbnail: "/work/google-cloud-bigquery-article.jpg",
@@ -465,6 +520,17 @@ export const workEntries: WorkEntry[] = [
     company: "BugSnag / SmartBear",
     what: "An original benchmark report built from anonymized BugSnag customer data, letting companies compare their app stability against their peers.",
     why: "There was no way for a BugSnag customer to know if their stability score was actually good. This gave them a real industry benchmark, while giving marketing original content unique to SmartBear that could be used in campaigns.",
+    myRole: "Research design · Data analysis · Report writing",
+    additionalSections: [
+      {
+        heading: "Rebuilding the research in-house",
+        body: "Previous versions of the Application Stability Index relied on an outside firm to analyze the data and write the report. We didn't have budget to take the same approach, so I rebuilt the process internally.\n\nI worked with Product to pull anonymized data from customers using BugSnag's SaaS product, using the previous report as a starting point for what we wanted to examine.\n\nOnce I had the data, I worked with Sales Engineering, Product, and one of the software engineers who built BugSnag to understand the findings and pressure-test my interpretation. I also analyzed the data myself for patterns and used Claude to help me reverse-engineer how some of the calculations in the previous report had been constructed.\n\nFrom there, I wrote the report around what the data could tell us about mobile application stability and how BugSnag approached measuring it.",
+      },
+      {
+        heading: "Planned activation",
+        body: "The report was intended to create awareness around BugSnag's approach to mobile app stability while giving Sales an original, data-backed story to bring into customer conversations.\n\nI planned a broader campaign around the research, including a webinar, supporting blog content, and a video with a BugSnag engineer explaining how companies could improve their application stability scores.\n\nThe campaign did not launch because I was laid off before it went to market.",
+      },
+    ],
     result: "Written and ready before being laid off; published after leaving, so there are no adoption results to share — happy to walk through the process behind building it.",
     link: "https://fredjo.xyz/BugSnag_Application-Stability-Index.pdf",
     featured: true,
@@ -491,7 +557,6 @@ export const workEntries: WorkEntry[] = [
     company: "Hunters",
     what: "A blog post on how AI and cloud architecture are reshaping what a modern SIEM needs to do.",
     why: "Part of Hunters' broader content strategy establishing a point of view on where the SIEM category was heading.",
-    result: "Published on Hunters' blog.",
     link: "https://www.hunters.security/en/blog/next-gen-siem-ai-cloud-secops",
   },
   {
@@ -523,8 +588,8 @@ export const workEntries: WorkEntry[] = [
     category: "Interactive",
     company: "BugSnag / SmartBear",
     what: "A retro-style arcade game built with Claude Code, using real BugSnag error types pulled from documentation.",
-    why: "To reach technical audiences through interactive content instead of traditional marketing.",
-    result: "Live and playable at fredjo.xyz/games/shooter.",
+    why: "I wanted to learn Claude Code while experimenting with a different way to engage technical audiences that often tune out traditional marketing.\n\nI'd seen a CMO use an arcade-style game as part of an ABM campaign and liked the idea of creating something people would actually want to interact with. BugSnag was just starting to explore ABM, so I built a BugSnag-themed game as an experiment in what that kind of experience could look like.\n\nThe game wasn't ultimately used in an ABM campaign, but it gave me a hands-on way to explore both AI-assisted development and a different approach to technical marketing.",
+    whyLabel: "Why I built it",
     link: "https://fredjo.xyz/games/shooter",
   },
 ];

@@ -15,6 +15,11 @@ const DISPLAY_ORDER = [
   "Podcasts",
 ] as const;
 
+const CATEGORY_INTROS: Partial<Record<string, string>> = {
+  "Customer Stories": "I choose customer stories based on the markets, use cases, and messages the business needs to prove — not simply which customers are willing to participate. I work with Customer Success to identify the right customers, interview and write the stories, manage customer approval, and turn them into assets Sales can use.",
+  "Podcasts": "I produced the first 18 episodes of Tamr's DataMasters podcast, from guest recruitment and episode development through interview questions and host/guest preparation.",
+};
+
 function companyBg(company: string): string {
   if (company.toLowerCase().includes("hunters")) return "bg-violet-950";
   if (company.toLowerCase().includes("tamr")) return "bg-blue-900";
@@ -39,7 +44,7 @@ function categoryAccent(category: string): string {
 function TypographicCover({ entry }: { entry: WorkEntry }) {
   const bg = companyBg(entry.company);
   const accent = categoryAccent(entry.category);
-  const coverMetric = entry.caseStudy?.sections.find((s) => s.metric)?.metric;
+  const coverMetric = entry.cardMetric ?? entry.caseStudy?.sections.find((s) => s.metric)?.metric;
 
   return (
     <div className={`absolute inset-0 ${bg} flex flex-col justify-between p-5`}>
@@ -99,9 +104,12 @@ export default function WorkGrid() {
   return (
     <div className="space-y-14">
       {DISPLAY_ORDER.map((category) => {
-        const entries = workEntries.filter((e) => e.category === category);
+        const entries = workEntries
+          .filter((e) => e.category === category)
+          .sort((a, b) => (a.displayOrder ?? Infinity) - (b.displayOrder ?? Infinity));
         if (!entries.length) return null;
 
+        const intro = CATEGORY_INTROS[category];
         return (
           <section key={category} id={category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-$/, "")}>
             <div className="mb-7">
@@ -109,6 +117,11 @@ export default function WorkGrid() {
                 {category}
               </h2>
               <div className="border-t border-stone-700" />
+              {intro && (
+                <p className="text-sm text-stone-400 leading-relaxed mt-5 max-w-2xl">
+                  {intro}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
