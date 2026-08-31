@@ -109,9 +109,7 @@ export default async function WorkEntryPage({ params }: Props) {
           <Link href="/work" className="text-sm text-stone-500 hover:text-stone-900 transition-colors">
             ← Work
           </Link>
-          <div className="flex items-center gap-6 text-sm text-stone-500">
-            <Link href="/resume" className="hover:text-stone-900 transition-colors">Resume</Link>
-          </div>
+          <div />
         </div>
       </nav>
 
