@@ -75,7 +75,7 @@ export const workEntries: WorkEntry[] = [
     additionalSections: [
       {
         heading: "How I built the messaging",
-        body: "I started with the people closest to customers — Sales, Sales Engineering, and Customer Success — to understand the problems customers were trying to solve around mobile app observability.\n\nI also talked directly with customers and listened to sales calls to understand why they bought BugSnag, the business outcomes they were seeing, and the language they used to describe those problems.\n\nI used those insights and customer language to build the messaging framework, then ran it back through Sales, Sales Engineering, Customer Success, and Product. I wanted to make sure the messaging reflected how BugSnag was actually being talked about in the field and that the technical details were accurate.",
+        body: "I started with the people closest to customers — Sales, Sales Engineering, and Customer Success — to understand the problems customers were trying to solve around mobile app observability.\n\nI also talked directly with customers and listened to recordings of sales calls to understand why they bought BugSnag, the business outcomes they were seeing, and the language they used to describe those problems.\n\nI used those insights and customer language to build the messaging framework, then ran it back through Sales, Sales Engineering, Customer Success, and Product. I wanted to make sure the messaging reflected how BugSnag was actually being talked about in the field and that the technical details were accurate.",
       },
     ],
     result: "Validated by listening to Gong recordings of sales calls. Prospects, in their own words, confirmed they experienced the problems the messaging described.",
@@ -531,7 +531,6 @@ export const workEntries: WorkEntry[] = [
         body: "The report was intended to create awareness around BugSnag's approach to mobile app stability while giving Sales an original, data-backed story to bring into customer conversations.\n\nI planned a broader campaign around the research, including a webinar, supporting blog content, and a video with a BugSnag engineer explaining how companies could improve their application stability scores.\n\nThe campaign did not launch because I was laid off before it went to market.",
       },
     ],
-    result: "Written and ready before being laid off; published after leaving, so there are no adoption results to share — happy to walk through the process behind building it.",
     link: "https://fredjo.xyz/BugSnag_Application-Stability-Index.pdf",
     featured: true,
   },
