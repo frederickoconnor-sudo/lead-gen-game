@@ -102,6 +102,8 @@ export default async function WorkEntryPage({ params }: Props) {
   const caseE = !caseA && !caseB && !caseC && !caseD && !!(entry.link && isPdfLink);
   const caseF = !caseA && !caseB && !caseC && !caseD && !caseE && !!(entry.link);
 
+  const viewLiveLabel = entry.link?.includes("/games/") ? "View live ↗" : "See the asset →";
+
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900">
       <nav className="sticky top-0 z-20 bg-stone-50/90 backdrop-blur-md border-b border-stone-200">
@@ -223,7 +225,7 @@ export default async function WorkEntryPage({ params }: Props) {
                 ))}
                 {entry.link && (
                   <div className="mt-2">
-                    <ViewLiveButton href={entry.link} internal={isInternalLink} />
+                    <ViewLiveButton href={entry.link} internal={isInternalLink} label={viewLiveLabel} />
                   </div>
                 )}
               </div>
@@ -255,7 +257,7 @@ export default async function WorkEntryPage({ params }: Props) {
             {caseD && (
               <div>
                 <div className="mb-5">
-                  <ViewLiveButton href={entry.link!} internal={isInternalLink} />
+                  <ViewLiveButton href={entry.link!} internal={isInternalLink} label={viewLiveLabel} />
                 </div>
                 {isInternalLink ? (
                   <Link href={entry.link!} className="block group">
@@ -314,7 +316,7 @@ export default async function WorkEntryPage({ params }: Props) {
             {/* Case F: link only */}
             {caseF && (
               <div>
-                <ViewLiveButton href={entry.link!} internal={isInternalLink} />
+                <ViewLiveButton href={entry.link!} internal={isInternalLink} label={viewLiveLabel} />
               </div>
             )}
 
