@@ -92,7 +92,7 @@ function WorkCard({ entry }: { entry: WorkEntry }) {
       <h3 className="font-[family-name:var(--font-syne)] text-sm font-bold text-stone-200 leading-snug mb-1.5 group-hover:text-violet-400 transition-colors duration-150">
         {entry.shortTitle ?? entry.title}
       </h3>
-      <p className="text-xs text-stone-400 leading-relaxed line-clamp-2 mb-1.5">
+      <p className="text-sm text-stone-400 leading-normal line-clamp-2 mb-1.5">
         {entry.hook}
       </p>
       <p className="text-[10px] text-stone-600">{entry.company}</p>
@@ -118,7 +118,7 @@ export default function WorkGrid() {
               </h2>
               <div className="border-t border-stone-700" />
               {intro && (
-                <p className="text-sm text-stone-400 leading-relaxed mt-5 max-w-2xl">
+                <p className="text-base text-stone-400 leading-normal mt-5 max-w-2xl">
                   {intro}
                 </p>
               )}

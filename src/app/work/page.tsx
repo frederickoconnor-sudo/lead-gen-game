@@ -23,7 +23,7 @@ export default function WorkPage() {
             About Me
           </h2>
           <div className="border-t border-stone-700 mb-6" />
-          <p className="text-stone-300 text-sm leading-relaxed max-w-2xl mb-5">
+          <p className="text-stone-300 text-base leading-normal max-w-2xl mb-5">
             Product marketer with 9+ years of B2B SaaS experience, including cybersecurity (EDR, SIEM, IAM), data management, and software development. Builds competitive intelligence and win/loss programs that arm sales teams, and translates complex, technical capabilities into narratives that resonate with buyers and sellers. Partners cross-functionally with product, sales, and demand gen to launch GTM campaigns and unblock deals.
           </p>
           <Link
